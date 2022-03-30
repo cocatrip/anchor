@@ -1,0 +1,5 @@
+jenkins:
+  file: Jenkinsfile-uat
+  imageName: index.docker.io/cocatrip/halo
+  imageTag: latest
+  buildContainer: node

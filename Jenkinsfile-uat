@@ -1,0 +1,168 @@
+pipeline {
+  environment {
+    Version_Major = 1
+    Version_Minor = 0
+    Version_Patch = 0
+    IMAGE_NAME = %{imageName}
+    IMAGE_TAG = %{imageTag}
+    cluster_context = credentials('cluster-context')
+    cluster_user = credentials('cluster-user')
+    String SonarProjectKey = 'ad1-lead-main'
+    String SonarHost = 'http://10.50.7.220:9000/dashboard?id='
+    String SPRING_ACTIVE_PROFILE = 'qa'
+  }
+
+  agent {
+    kubernetes {
+      
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+  component: ci
+spec:
+  # Use service account that can deploy to all namespaces
+  
+  containers: 
+  - name: %{buildContainer}
+    image: %{buildContainerImage}
+    imagePullPolicy: IfNotPresent
+    command:
+    - cat
+    tty: true 
+  - name: helm
+    image: trainingad1/helm3
+    imagePullPolicy: IfNotPresent
+    command:
+    - cat
+    tty: true
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug-539ddefcae3fd6b411a95982a830d987f4214251
+    imagePullPolicy: IfNotPresent
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: docker-config
+        mountPath: /kaniko/.docker
+  volumes:
+  - name: docker-config
+    projected:
+      sources:
+      - secret:
+          name: regcred
+          items:
+            - key: .dockerconfigjson
+              path: config.json
+    
+"""
+}
+  }
+  stages {
+    stage('build') {
+      steps {
+        container('%{buildContainer}') {
+          sh """
+            echo "******** currently executing Build stage ********"
+            %{buildStep}
+          """
+        }
+      }
+    }
+    stage('sonarqube') {
+      steps {
+          withSonarQubeEnv('sonarqube-uat') {
+        container('maven') {
+          sh """
+           echo "******** currently executing sonarqube stage ********"
+           mvn sonar:sonar \
+			 -Dsonar.projectKey=ad1-lead-main \
+			 -Dsonar.host.url=http://10.50.7.220:9000 \
+			 -Dsonar.login=6a7f6c74559ca03a328fa4761080f1a5b49b19a6
+          """
+        }
+      }
+    }
+  }
+    stage("Quality gate") {
+            steps {
+                echo "******** currently executing Quality gate stage ********"
+                waitForQualityGate abortPipeline: false
+            }
+        }
+        
+     stage ("Approval Email") {
+        steps {
+            emailext mimeType: 'text/html',
+			subject: "[Jenkins]${currentBuild.fullDisplayName}",
+			to: "lucky.andriawan@adira.co.id",
+			body: '''
+               <h1 style="color: #5e9ca0;"><span style="color: #000000;">DEPLOYMENT AD1-LEAD-MAIN</span></h1>
+               <p>Lanjutkan proses deployment <b>ad1-lead-main</b> ?</p>
+               <p>Cek di Jenkins untuk Approval --&gt; <span style="background-color: #FDB813; color: #2b2301; display: inline-block; padding: 3px 10px; font-weight: bold; border-radius: 5px;"><a href="${BUILD_URL}input">Click Here !!</a></span></p>
+               <p>&nbsp;</p>
+               <p><strong>&nbsp;</strong></p>
+               <p>Terima kasih</p>
+               '''
+			script {
+                def userInput = input(
+                    id: 'userInput', message: 'Lanjut Deploy ke Env UAT ?', parameters: [
+                        [$class: 'BooleanParameterDefinition', defaultValue: false, description: '', name: 'Konfirmasi terlebih dahulu disini ']
+                        ])
+			    if(!userInput) {
+			    error "Tidak di konfirmasi"
+                }
+            }
+        }
+    }   
+    
+    stage('kaniko stage and pushing image to ali private registry') {
+      steps {
+        container('kaniko') {
+          sh """
+             echo "******** currently executing kaniko stage ********"
+             cp $workspace/target/com.adira.leadengine.main-0.0.1-SNAPSHOT.jar ./com.adira.leadengine.main-0.0.1-SNAPSHOT.jar
+           /kaniko/executor --dockerfile=Dockerfile-uat `pwd`/Dockerfile-uat --context `pwd` --destination="${IMAGE_NAME}:${IMAGE_TAG}"
+            """
+        }
+      }
+    }
+    stage('helm') {
+      steps {
+        container('helm') {
+          withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+          sh """
+            echo "******** currently executing deployment stage ********"
+            kubectl config set-context ${cluster_context} --cluster=kubernetes --user=${cluster_user}
+            kubectl config use-context ${cluster_context}
+            kubectl get nodes
+            helm upgrade -i ad1-lead-main helm/ad1-lead-main -f helm/ad1-lead-main/values-uat.yaml -n leadengine-uat  --set=image.tag=${IMAGE_TAG}
+            kubectl rollout status deployment/ad1-lead-main -n leadengine-uat
+            kubectl get pods -n leadengine-uat
+            helm ls -n leadengine-uat
+             """
+         }
+        }
+      }
+    post {
+        failure {
+              mail to: 'v.hanif.alfath@adira.co.id,nika.aditia@adira.co.id,lucky.andriawan@adira.co.id,sonarandkatalon@adira.co.id',
+                subject: "FAILED: Build ${env.JOB_NAME}",
+                body: "Build failed ${env.JOB_NAME} build no: ${env.BUILD_NUMBER}.\n\nView the log at:\n ${env.BUILD_URL}\n\nSee The SonarQube Report : ${SonarHost}${SonarProjectKey}"
+        }
+    success{
+            mail to: 'v.hanif.alfath@adira.co.id,nika.aditia@adira.co.id,lucky.andriawan@adira.co.id,sonarandkatalon@adira.co.id',
+                subject: "SUCCESSFUL: Build ${env.JOB_NAME}",
+                body: "Build Successful ${env.JOB_NAME} build no: ${env.BUILD_NUMBER}\n\nView the log at:\n ${env.BUILD_URL}\n\nSee The SonarQube Report : ${SonarHost}${SonarProjectKey}"
+        }
+        aborted{
+            mail to: 'v.hanif.alfath@adira.co.id,nika.aditia@adira.co.id,lucky.andriawan@adira.co.id,sonarandkatalon@adira.co.id',
+                subject: "ABORTED: Build ${env.JOB_NAME}",
+                body: "Build was aborted ${env.JOB_NAME} build no: ${env.BUILD_NUMBER}\n\nView the log at:\n ${env.BUILD_URL}\n\nSee The SonarQube Report : ${SonarHost}${SonarProjectKey}"
+        }
+       } 
+    }
+  }
+}
