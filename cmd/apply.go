@@ -6,8 +6,10 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // applyCmd represents the apply command
@@ -16,7 +18,29 @@ var applyCmd = &cobra.Command{
 	Short: "",
 	Long: ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("apply called")
+		if err := viper.ReadInConfig(); err == nil {
+			fmt.Println("Using config file:", viper.ConfigFileUsed())
+			fmt.Println()
+		}
+
+		var c Config
+
+		if err := viper.Unmarshal(&c); err != nil {
+			panic(err)
+		}
+
+		template := c.Jenkins.TemplateJenkins()
+		
+		file, err := os.OpenFile(c.Jenkins.File, os.O_RDWR, 0644)
+		if err != nil {
+			panic(err)
+		}; defer file.Close()
+
+		_, err = file.WriteAt([]byte(template), 0)
+		if err != nil {
+			panic(err)
+		}
+
 		return nil
 	},
 }

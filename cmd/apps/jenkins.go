@@ -72,22 +72,18 @@ func (j *Jenkins) TemplateJenkins() string {
         if configValue[i] == "" {
           if j.BuildContainer == "maven" {
             configValue[i] += "mvn clean package"
-          }
-
-          if j.BuildContainer == "node" {
+          }else if j.BuildContainer == "node" {
             configValue[i] += `npm install
             npm run build`
           }
         }
-
-        fmt.Println(configValue[i])
       }
+
       if format(configField[i]) == jenkinsValue[k][1] {
         jenkinsFile = strings.ReplaceAll(jenkinsFile, jenkinsValue[k][0], configValue[i])
       }
     }
   }
 
-  fmt.Println(jenkinsFile)
   return jenkinsFile
 }

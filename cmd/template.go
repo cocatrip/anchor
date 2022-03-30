@@ -39,7 +39,8 @@ var jenkins = &cobra.Command{
 			panic(err)
 		}
 
-		_ = c.Jenkins.TemplateJenkins()
+		template := c.Jenkins.TemplateJenkins()
+		fmt.Println(template)
 
 		return nil
 	},
