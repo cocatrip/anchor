@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -42,5 +43,10 @@ func initConfig() {
 	} else {
 		viper.AddConfigPath(".")
 		viper.SetConfigName("config.yaml")
+	}
+
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		fmt.Println()
 	}
 }

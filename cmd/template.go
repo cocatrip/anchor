@@ -6,6 +6,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/cocatrip/anchor/cmd/apps"
 	"github.com/spf13/cobra"
@@ -30,11 +31,6 @@ var jenkins = &cobra.Command{
 	Short:	"",
 	Long:		``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := viper.ReadInConfig(); err == nil {
-			fmt.Println("Using config file:", viper.ConfigFileUsed())
-			fmt.Println()
-		}
-
 		var c Config
 
 		if err := viper.Unmarshal(&c); err != nil {
@@ -42,7 +38,10 @@ var jenkins = &cobra.Command{
 		}
 
 		template := c.Jenkins.TemplateJenkins()
+
 		fmt.Println(template)
+
+		saveFile("Jenkinsfile-"+"test", template)
 
 		return nil
 	},
@@ -53,11 +52,6 @@ var helm = &cobra.Command{
 	Short:	"",
 	Long:		``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := viper.ReadInConfig(); err == nil {
-			fmt.Println("Using config file:", viper.ConfigFileUsed())
-			fmt.Println()
-		}
-
 		var c Config
 
 		if err := viper.Unmarshal(&c); err != nil {
@@ -76,11 +70,6 @@ var docker = &cobra.Command{
 	Short:	"",
 	Long:		``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := viper.ReadInConfig(); err == nil {
-			fmt.Println("Using config file:", viper.ConfigFileUsed())
-			fmt.Println()
-		}
-
 		var c Config
 
 		if err := viper.Unmarshal(&c); err != nil {
@@ -95,18 +84,43 @@ var docker = &cobra.Command{
 }
 
 func init() {
+	// nambahin command template ke anchor
 	rootCmd.AddCommand(templateCmd)
+	// nambahin command jenkins ke template
 	templateCmd.AddCommand(jenkins)
+	// nambahin command helm ke template
 	templateCmd.AddCommand(helm)
+	// nambahin command docker ke template
 	templateCmd.AddCommand(docker)
+}
 
-	// Here you will define your flags and configuration settings.
+func saveFile(fileName string, content string) error {
+	// check file ada ga
+	if _, err := os.Stat(fileName); err != nil {
+		// kalo gada create
+		file, err := os.Create(fileName)
+    if err != nil {
+			panic(err)
+    }; defer file.Close()
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// templateCmd.PersistentFlags().String("foo", "", "A help for foo")
+		// save file
+		_, err = file.WriteAt([]byte(content), 0)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		// kalo ada open
+		file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
+		if err != nil {
+			panic(err)
+		}; defer file.Close()
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// templateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+		// save file
+		_, err = file.WriteAt([]byte(content), 0)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	return nil
 }
