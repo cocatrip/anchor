@@ -3,13 +3,13 @@ pipeline {
     Version_Major = 1
     Version_Minor = 0
     Version_Patch = 0
-    IMAGE_NAME = index.docker.io/cocatrip/halo
-    IMAGE_TAG = latest
+    IMAGE_NAME = "%{SERVER_NAME}/%{BUSINESS_NAME}/%{TESTING_TAG}-%{APPLICATION_NAME}"
+    IMAGE_TAG = "${Version_Major}.${Version_Minor}.${Version_Patch}-${BUILD_TIMESTAMP}-${env.BUILD_NUMBER}"
     cluster_context = credentials('cluster-context')
     cluster_user = credentials('cluster-user')
-    String SonarProjectKey = 'ad1-lead-main'
-    String SonarHost = 'http://10.50.7.220:9000/dashboard?id='
-    String SPRING_ACTIVE_PROFILE = 'qa'
+    String SonarProjectKey = '%{APPLICATION_NAME}'
+    String SonarHost = '%{LINK_SONARQUBE}'
+    String SPRING_ACTIVE_PROFILE = '%{TESTING_TAG}'
   }
 
   agent {
@@ -26,8 +26,8 @@ spec:
   # Use service account that can deploy to all namespaces
   
   containers: 
-  - name: node
-    image: %{buildContainerImage}
+  - name: maven
+    image: maven:3.8.1-openjdk-11
     imagePullPolicy: IfNotPresent
     command:
     - cat
@@ -52,7 +52,7 @@ spec:
     projected:
       sources:
       - secret:
-          name: regcred
+          name: regcred1
           items:
             - key: .dockerconfigjson
               path: config.json
@@ -63,25 +63,24 @@ spec:
   stages {
     stage('build') {
       steps {
-        container('node') {
+        container('maven') {
           sh """
             echo "******** currently executing Build stage ********"
-            npm install
-            npm run build
+            mvn  clean package 
           """
         }
       }
     }
     stage('sonarqube') {
       steps {
-          withSonarQubeEnv('sonarqube-uat') {
+          withSonarQubeEnv('sonarqube-%{TESTING_TAG}') {
         container('maven') {
           sh """
            echo "******** currently executing sonarqube stage ********"
-           mvn sonar:sonar \
-			 -Dsonar.projectKey=ad1-lead-main \
-			 -Dsonar.host.url=http://10.50.7.220:9000 \
-			 -Dsonar.login=6a7f6c74559ca03a328fa4761080f1a5b49b19a6
+           mvn clean verify sonar:sonar sonar:sonar \
+             -Dsonar.projectKey=%{APPLICATION_NAME} \
+             -Dsonar.host.url=%{SONARQUBE_URL} \
+             -Dsonar.login=%{SONARQUBE_KEY}
           """
         }
       }
@@ -93,39 +92,13 @@ spec:
                 waitForQualityGate abortPipeline: false
             }
         }
-        
-     stage ("Approval Email") {
-        steps {
-            emailext mimeType: 'text/html',
-			subject: "[Jenkins]${currentBuild.fullDisplayName}",
-			to: "lucky.andriawan@adira.co.id",
-			body: '''
-               <h1 style="color: #5e9ca0;"><span style="color: #000000;">DEPLOYMENT AD1-LEAD-MAIN</span></h1>
-               <p>Lanjutkan proses deployment <b>ad1-lead-main</b> ?</p>
-               <p>Cek di Jenkins untuk Approval --&gt; <span style="background-color: #FDB813; color: #2b2301; display: inline-block; padding: 3px 10px; font-weight: bold; border-radius: 5px;"><a href="${BUILD_URL}input">Click Here !!</a></span></p>
-               <p>&nbsp;</p>
-               <p><strong>&nbsp;</strong></p>
-               <p>Terima kasih</p>
-               '''
-			script {
-                def userInput = input(
-                    id: 'userInput', message: 'Lanjut Deploy ke Env UAT ?', parameters: [
-                        [$class: 'BooleanParameterDefinition', defaultValue: false, description: '', name: 'Konfirmasi terlebih dahulu disini ']
-                        ])
-			    if(!userInput) {
-			    error "Tidak di konfirmasi"
-                }
-            }
-        }
-    }   
-    
     stage('kaniko stage and pushing image to ali private registry') {
       steps {
         container('kaniko') {
           sh """
              echo "******** currently executing kaniko stage ********"
-             cp $workspace/target/com.adira.leadengine.main-0.0.1-SNAPSHOT.jar ./com.adira.leadengine.main-0.0.1-SNAPSHOT.jar
-           /kaniko/executor --dockerfile=Dockerfile-uat `pwd`/Dockerfile-uat --context `pwd` --destination="${IMAGE_NAME}:${IMAGE_TAG}"
+             cp $workspace/target/%{JAR_APP_NAME} ./%{JAR_APP_NAME}
+           /kaniko/executor --dockerfile `pwd`/Dockerfile-%{TESTING_TAG} --context `pwd` --destination="${IMAGE_NAME}:${IMAGE_TAG}"
             """
         }
       }
@@ -139,10 +112,10 @@ spec:
             kubectl config set-context ${cluster_context} --cluster=kubernetes --user=${cluster_user}
             kubectl config use-context ${cluster_context}
             kubectl get nodes
-            helm upgrade -i ad1-lead-main helm/ad1-lead-main -f helm/ad1-lead-main/values-uat.yaml -n leadengine-uat  --set=image.tag=${IMAGE_TAG}
-            kubectl rollout status deployment/ad1-lead-main -n leadengine-uat
-            kubectl get pods -n leadengine-uat
-            helm ls -n leadengine-uat
+            helm upgrade -i ad1-lead-main helm/ad1-lead-main -f helm/ad1-lead-main/values-dev.yaml -n leadengine  --set=image.tag=${IMAGE_TAG}
+            kubectl rollout status deployment/ad1-lead-main -n leadengine
+            kubectl get pods -n leadengine
+            helm ls -n leadengine
              """
          }
         }
