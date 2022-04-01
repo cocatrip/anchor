@@ -3,3 +3,8 @@ jenkins:
   imageName: index.docker.io/cocatrip/halo
   imageTag: latest
   buildContainer: node
+
+helm:
+  file: helm/ad1-lead-main/values-uat.yaml
+  imageRepository: repo.repo
+  imageTag: latest

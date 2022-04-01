@@ -14,6 +14,8 @@ import (
 
 type Config struct {
   Jenkins apps.Jenkins
+	Helm 		apps.Helm
+	Docker	apps.Docker
 }
 
 // templateCmd represents the template command
@@ -46,9 +48,57 @@ var jenkins = &cobra.Command{
 	},
 }
 
+var helm = &cobra.Command{
+	Use:		"helm",
+	Short:	"",
+	Long:		``,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if err := viper.ReadInConfig(); err == nil {
+			fmt.Println("Using config file:", viper.ConfigFileUsed())
+			fmt.Println()
+		}
+
+		var c Config
+
+		if err := viper.Unmarshal(&c); err != nil {
+			panic(err)
+		}
+
+		template := c.Helm.TemplateHelm()
+		fmt.Println(template)
+
+		return nil
+	},
+}
+
+var docker = &cobra.Command{
+	Use:		"docker",
+	Short:	"",
+	Long:		``,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if err := viper.ReadInConfig(); err == nil {
+			fmt.Println("Using config file:", viper.ConfigFileUsed())
+			fmt.Println()
+		}
+
+		var c Config
+
+		if err := viper.Unmarshal(&c); err != nil {
+			panic(err)
+		}
+
+		template := c.Docker.TemplateDocker()
+		fmt.Println(template)
+
+		return nil
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(templateCmd)
 	templateCmd.AddCommand(jenkins)
+	templateCmd.AddCommand(helm)
+	templateCmd.AddCommand(docker)
 
 	// Here you will define your flags and configuration settings.
 
