@@ -47,13 +47,6 @@ func (h *Helm) ReadHelm() [][]string {
   return values
 }
 
-// func format(s string) string {
-//   a := []rune(s)
-//   a[0] = unicode.ToLower(a[0])
-//   s = string(a)
-//   return s
-// }
-
 func (h *Helm) TemplateHelm() string {
   helmByte, err := ioutil.ReadFile(h.File)
   if err != nil {
@@ -65,7 +58,7 @@ func (h *Helm) TemplateHelm() string {
 
   for i := 0; i < h.GetValuesLength(); i++ {
     for j := 0; j < len(h.ReadHelm()); j++ {
-      if format(configField[i]) == helmValue[j][1] {
+      if configField[i] == helmValue[j][1] {
         helmFile = strings.ReplaceAll(helmFile, helmValue[j][0], configValue[i])
       }
     }
