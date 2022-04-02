@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.beta.kubernetes.io/alibaba-cloud-loadbalancer-address-type: "intranet"
+    #service.beta.kubernetes.io/alibaba-cloud-loadbalancer-vswitch-id: "vsw-k1ajdhoii6qauydjn44qv"
+  name: {{ include "ad1-lead-main.fullname" . }}
+  labels:
+    {{- include "ad1-lead-main.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetport }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "ad1-lead-main.selectorLabels" . | nindent 4 }}

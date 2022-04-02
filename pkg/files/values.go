@@ -1,0 +1,101 @@
+package files
+
+var Values string = `# Default values for ad1-lead-main.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: %{SERVER_NAME}/%{BUSINESS_NAME}/%{TESTING_TAG}-%{APPLICATION_NAME}
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: %{Version_Major}.%{Version_Minor}.%{Version_Patch}-%{BUILD_TIMESTAMP}-%{BUILD_NUMBER}
+
+config:
+  spring_active_profile: '%{TESTING_TAG}'
+  
+readiness:
+  path: /actuator/health/readiness
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+liveness:
+  path: /actuator/health/liveness  
+  failureThreshold: 3
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+imagePullSecrets:
+  - name: regcred
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+chart:
+  releaseName: %{APPLICATION_NAME}
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: %{SERVICE_TYPE}
+  port: %{SERVICE_PORT}
+  targetport: %{SERVICE_TARGETPORT}
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: %{CPU_LIMIT}
+    memory: %{MEM_LIMIT}
+  requests:
+    cpu: %{CPU_REQUEST}
+    memory: %{MEM_REQUEST}
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}`
