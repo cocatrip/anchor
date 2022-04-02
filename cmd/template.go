@@ -6,22 +6,13 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/cocatrip/anchor/cmd/apps"
+	"github.com/cocatrip/anchor/pkg/common"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-type Config struct {
-	App          string
-	BusinessName string
-	Tag          string
-	Template     string
-	Jenkins      apps.Jenkins
-	Helm         apps.Helm
-	Docker       apps.Docker
-}
 
 // templateCmd represents the template command
 var templateCmd = &cobra.Command{
@@ -35,19 +26,19 @@ var jenkins = &cobra.Command{
 	Short: "parse jenkins from jenkinsfile",
 	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var c Config
+		var c apps.Config
 
 		if err := viper.Unmarshal(&c); err != nil {
 			panic(err)
 		}
 
-		c.Jenkins.New(c.App, c.Tag, c.BusinessName)
+		c.Jenkins.New(c)
 
 		template := c.Jenkins.TemplateJenkins()
 
 		fmt.Println(template)
 
-		saveFile(c.Jenkins.FILE, template)
+		common.SaveFile(c.Jenkins.FILE, template)
 
 		return nil
 	},
@@ -58,19 +49,44 @@ var docker = &cobra.Command{
 	Short: "parse docker from dockerfile",
 	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var c Config
+		var c apps.Config
 
 		if err := viper.Unmarshal(&c); err != nil {
 			panic(err)
 		}
 
-		c.Docker.New(c.App, c.Tag, c.BusinessName)
+		c.Docker.New(c)
 
 		template := c.Docker.TemplateDocker()
 
 		fmt.Println(template)
 
-		saveFile(c.Docker.FILE, template)
+		common.SaveFile(c.Docker.FILE, template)
+
+		return nil
+	},
+}
+
+var helm = &cobra.Command{
+	Use:   "helm",
+	Short: "parse helm from values.yaml",
+	Long:  ``,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		var c apps.Config
+
+		if err := viper.Unmarshal(&c); err != nil {
+			panic(err)
+		}
+
+		c.Helm.New(c)
+
+		c.Helm.InitHelm()
+
+		template := c.Helm.TemplateHelm()
+
+		fmt.Println(template)
+
+		// saveFile(c.Helm.FILE, template)
 
 		return nil
 	},
@@ -83,37 +99,6 @@ func init() {
 	templateCmd.AddCommand(jenkins)
 	// nambahin command docker ke template
 	templateCmd.AddCommand(docker)
-}
-
-func saveFile(fileName string, content string) error {
-	// check file ada ga
-	if _, err := os.Stat(fileName); err != nil {
-		// kalo gada create
-		file, err := os.Create(fileName)
-		if err != nil {
-			panic(err)
-		}
-		defer file.Close()
-
-		// save file
-		_, err = file.WriteAt([]byte(content), 0)
-		if err != nil {
-			panic(err)
-		}
-	} else {
-		// kalo ada open
-		file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
-		if err != nil {
-			panic(err)
-		}
-		defer file.Close()
-
-		// save file
-		_, err = file.WriteAt([]byte(content), 0)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	return nil
+	// nambahin command helm ke template
+	templateCmd.AddCommand(helm)
 }

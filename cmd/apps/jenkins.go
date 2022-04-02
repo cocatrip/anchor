@@ -9,11 +9,11 @@ import (
 )
 
 type Jenkins struct {
+	FILE             string
 	APPLICATION_NAME string
 	BUSINESS_NAME    string
 	TESTING_TAG      string
-	FILE             string
-	SERVER_NAME      string `yaml:"SERVER_NAME,omitempty"`
+	SERVER_NAME      string
 	LINK_SONARQUBE   string `yaml:"LINK_SONARQUBE,omitempty"`
 	SONARQUBE_URL    string `yaml:"SONARQUBE_URL,omitempty"`
 	SONARQUBE_KEY    string `yaml:"SONARQUBE_KEY,omitempty"`
@@ -21,11 +21,12 @@ type Jenkins struct {
 	CREDENTIAL_HELM  string `yaml:"CREDENTIAL_HELM,omitempty"`
 }
 
-func (j *Jenkins) New(app string, tag string, businessName string) {
-	j.APPLICATION_NAME = app
-	j.BUSINESS_NAME = businessName
-	j.TESTING_TAG = tag
-	j.FILE = fmt.Sprintf("Jenkinsfile-%s", j.TESTING_TAG)
+func (j *Jenkins) New(c Config) {
+	j.APPLICATION_NAME = c.APPLICATION_NAME
+	j.BUSINESS_NAME = c.BUSINESS_NAME
+	j.TESTING_TAG = c.TESTING_TAG
+	j.SERVER_NAME = c.SERVER_NAME
+	j.FILE = fmt.Sprintf("Jenkinsfile-%s", c.TESTING_TAG)
 }
 
 func (j *Jenkins) GetValues() ([]string, []string) {

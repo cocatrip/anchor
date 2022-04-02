@@ -19,11 +19,11 @@ type Docker struct {
 	ELASTIC_PORT     string `yaml:"ELASTIC_PORT,omitempty"`
 }
 
-func (d *Docker) New(app string, tag string, businessName string) {
-	d.APPLICATION_NAME = app
-	d.BUSINESS_NAME = businessName
-	d.TESTING_TAG = tag
-	d.FILE = fmt.Sprintf("Dockerfile-%s", d.TESTING_TAG)
+func (d *Docker) New(c Config) {
+	d.APPLICATION_NAME = c.APPLICATION_NAME
+	d.BUSINESS_NAME = c.BUSINESS_NAME
+	d.TESTING_TAG = c.TESTING_TAG
+	d.FILE = fmt.Sprintf("Dockerfile-%s", c.TESTING_TAG)
 }
 
 func (d *Docker) GetValues() ([]string, []string) {
