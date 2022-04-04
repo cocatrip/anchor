@@ -7,9 +7,6 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
-	"strings"
-	"text/template"
 
 	"github.com/cocatrip/anchor/cmd/apps"
 	"github.com/spf13/cobra"
@@ -17,43 +14,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// templateCmd represents the template command
 var templateCmd = &cobra.Command{
 	Use:   "template",
 	Short: "parse & save file",
 	Long:  ``,
-}
-
-func Template(f string, m map[string]interface{}) {
-    t := template.New(f)
-    t = t.Delims("[[", "]]")
-    t, err := t.ParseFiles(f)
-    if err != nil {
-        panic(err)
-    }
-
-    file, err := os.Create(f+"-uat")
-    if err != nil {
-        panic(err)
-    }; defer file.Close()
-
-    err = t.Execute(file, m)
-    if err != nil {
-        panic(err)
-    }
-
-    contentByte, err := ioutil.ReadFile(f+"-uat")
-    if err != nil {
-        panic(err)
-    }; content := string(contentByte)
-
-    fmt.Println(content)
-
-    if strings.Contains(content, "<no value>") {
-        fmt.Println("ada yang no value")
-    } else {
-        fmt.Println("tidak ada yang no value")
-    }
 }
 
 var jenkins = &cobra.Command{
@@ -63,11 +27,16 @@ var jenkins = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
-		if err := viper.Unmarshal(&c); err != nil {
+		f, err := ioutil.ReadFile(viper.ConfigFileUsed())
+		if err != nil {
 			panic(err)
 		}
 
-        // Template("Jenkinsfile", c.Jenkins)
+		if err := yaml.Unmarshal(f, &c); err != nil {
+			panic(err)
+		}
+
+		c.Template("Jenkinsfile", "Jenkinsfile-uat")
 
 		return nil
 	},
@@ -80,19 +49,16 @@ var docker = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
-        f, err := ioutil.ReadFile(viper.ConfigFileUsed())
-        if err != nil {
-            panic(err)
-        }
+		f, err := ioutil.ReadFile(viper.ConfigFileUsed())
+		if err != nil {
+			panic(err)
+		}
 
-        if err := yaml.Unmarshal(f, &c); err != nil {
-            panic(err)
-        }
+		if err := yaml.Unmarshal(f, &c); err != nil {
+			panic(err)
+		}
 
-        fmt.Println(c.Docker)
-        fmt.Println()
-
-        Template("Dockerfile", c.Docker)
+		c.Template("Dockerfile", "Dockerfile-uat")
 
 		return nil
 	},
@@ -105,19 +71,26 @@ var helm = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
-		if err := viper.Unmarshal(&c); err != nil {
+		f, err := ioutil.ReadFile(viper.ConfigFileUsed())
+		if err != nil {
 			panic(err)
 		}
 
-		c.Helm.New(c)
+		if err := yaml.Unmarshal(f, &c); err != nil {
+			panic(err)
+		}
 
-		c.Helm.InitHelm()
+		isNoSecret, err := cmd.Flags().GetBool("no-secret")
+		if err != nil {
+			panic(err)
+		}
 
-		template := c.Helm.TemplateHelm()
+		apps.InitHelm(c, isNoSecret)
 
-		fmt.Println(template)
+		templateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
+		resultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
 
-		// saveFile(c.Helm.FILE, template)
+		c.Template(templateFileName, resultFileName)
 
 		return nil
 	},
@@ -132,4 +105,6 @@ func init() {
 	templateCmd.AddCommand(docker)
 	// nambahin command helm ke template
 	templateCmd.AddCommand(helm)
+
+	helm.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
 }

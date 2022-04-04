@@ -7,13 +7,13 @@ var Values string = `# Default values for ad1-lead-main.
 replicaCount: 1
 
 image:
-  repository: %{SERVER_NAME}/%{BUSINESS_NAME}/%{TESTING_TAG}-%{APPLICATION_NAME}
+  repository: [[ .Global.SERVER_NAME ]]/[[ .Global.BUSINESS_NAME ]]/[[ .Global.TESTING_TAG ]]-[[ .Global.APPLICATION_NAME ]]
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: %{Version_Major}.%{Version_Minor}.%{Version_Patch}-%{BUILD_TIMESTAMP}-%{BUILD_NUMBER}
 
 config:
-  spring_active_profile: '%{TESTING_TAG}'
+  spring_active_profile: '[[ .Global.TESTING_TAG ]]'
   
 readiness:
   path: /actuator/health/readiness
@@ -47,7 +47,7 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 chart:
-  releaseName: %{APPLICATION_NAME}
+  releaseName: [[ .Global.APPLICATION_NAME ]]
 
 securityContext: {}
   # capabilities:

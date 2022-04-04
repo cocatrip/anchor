@@ -3,13 +3,13 @@ pipeline {
     Version_Major = 1
     Version_Minor = 0
     Version_Patch = 0
-    IMAGE_NAME = "%{SERVER_NAME}/%{BUSINESS_NAME}/%{TESTING_TAG}-%{APPLICATION_NAME}"
+    IMAGE_NAME = "[[.Global.SERVER_NAME]]/[[.Global.BUSINESS_NAME]]/[[.Global.TESTING_TAG]]-[[.Global.APPLICATION_NAME]]"
     IMAGE_TAG = "${Version_Major}.${Version_Minor}.${Version_Patch}-${BUILD_TIMESTAMP}-${env.BUILD_NUMBER}"
     cluster_context = credentials('cluster-context')
     cluster_user = credentials('cluster-user')
-    String SonarProjectKey = '%{APPLICATION_NAME}'
-    String SonarHost = '%{LINK_SONARQUBE}'
-    String SPRING_ACTIVE_PROFILE = '%{TESTING_TAG}'
+    String SonarProjectKey = '[[.Global.APPLICATION_NAME]]'
+    String SonarHost = '[[.Jenkins.LINK_SONARQUBE]]'
+    String SPRING_ACTIVE_PROFILE = '[[.Global.TESTING_TAG]]'
   }
 
   agent {
@@ -73,14 +73,14 @@ spec:
     }
     stage('sonarqube') {
       steps {
-          withSonarQubeEnv('sonarqube-%{TESTING_TAG}') {
+          withSonarQubeEnv('sonarqube-[[.Global.TESTING_TAG]]') {
         container('maven') {
           sh """
            echo "******** currently executing sonarqube stage ********"
            mvn clean verify sonar:sonar sonar:sonar \
-             -Dsonar.projectKey=%{APPLICATION_NAME} \
-             -Dsonar.host.url=%{SONARQUBE_URL} \
-             -Dsonar.login=%{SONARQUBE_KEY}
+             -Dsonar.projectKey=[[.Global.APPLICATION_NAME]] \
+             -Dsonar.host.url=[[.Jenkins.SONARQUBE_URL]] \
+             -Dsonar.login=[[.Jenkins.SONARQUBE_KEY]]
           """
         }
       }
@@ -97,8 +97,8 @@ spec:
         container('kaniko') {
           sh """
              echo "******** currently executing kaniko stage ********"
-             cp $workspace/target/%{JAR_APP_NAME} ./%{JAR_APP_NAME}
-           /kaniko/executor --dockerfile `pwd`/Dockerfile-%{TESTING_TAG} --context `pwd` --destination="${IMAGE_NAME}:${IMAGE_TAG}"
+             cp $workspace/target/[[.Jenkins.JAR_APP_NAME]] ./[[.Jenkins.JAR_APP_NAME]]
+           /kaniko/executor --dockerfile `pwd`/Dockerfile-[[.Global.TESTING_TAG]] --context `pwd` --destination="${IMAGE_NAME}:${IMAGE_TAG}"
             """
         }
       }

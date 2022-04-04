@@ -3,16 +3,16 @@ package files
 var Deployment string = `apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "%{APPLICATION_NAME}.fullname" . }}
+  name: {{ include "[[ .Global.APPLICATION_NAME ]].fullname" . }}
   labels:
-    {{- include "%{APPLICATION_NAME}.labels" . | nindent 4 }}
+    {{- include "[[ .Global.APPLICATION_NAME ]].labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "%{APPLICATION_NAME}.selectorLabels" . | nindent 6 }}
+      {{- include "[[ .Global.APPLICATION_NAME ]].selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -20,13 +20,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "%{APPLICATION_NAME}.selectorLabels" . | nindent 8 }}
+        {{- include "[[ .Global.APPLICATION_NAME ]].selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "%{APPLICATION_NAME}.serviceAccountName" . }}
+      serviceAccountName: {{ include "[[ .Global.APPLICATION_NAME ]].serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
