@@ -2,9 +2,9 @@ FROM trainingad1/java11
 RUN java -version
 RUN cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime && echo "Asia/Jakarta" > /etc/timezone
 EXPOSE 1020
-COPY id-0.0.1-snapshot.jar id-0.0.1-snapshot.jar
+COPY %{JAR_SNAPSHOT}.jar %{JAR_SNAPSHOT}.jar
 COPY . .
 #RUN ls -la
 RUN pwd
-ENTRYPOINT ["java", "-javaagent:/elastic-apm-agent-1.28.1.jar", "-Delastic.apm.service_name=uat-ad1-lead-main", "-Delastic.apm.server_urls=http://apm-server.logging.svc.cluster.local:8200", "-Delastic.apm.application_packages=id.co.adira.administrasi" ,"-Xms512m" , "-Xmx1024m", "-jar", "id-0.0.1-snapshot.jar"]
+ENTRYPOINT ["java", "-javaagent:/elastic-apm-agent-1.28.1.jar", "-Delastic.apm.service_name=%{TESTING_TAG}-%{APPLICATION_NAME}", "-Delastic.apm.server_urls=http://%{ELASTIC_URL}:%{ELASTIC_PORT}", "-Delastic.apm.application_packages=id.co.adira.%{BUSINESS_NAME}" ,"-Xms512m" , "-Xmx1024m", "-jar", "%{JAR_SNAPSHOT}.jar"]
 #ENTRYPOINT java -Xms512m -Xmx1024m -jar com.adira.leadengine.main-0.0.1-SNAPSHOT.jar

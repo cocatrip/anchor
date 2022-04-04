@@ -5,7 +5,7 @@ type Config struct {
 	BUSINESS_NAME    string `yaml:"BUSINESS_NAME,omitempty"`
 	TESTING_TAG      string `yaml:"TESTING_TAG,omitempty"`
 	SERVER_NAME      string `yaml:"SERVER_NAME,omitempty"`
-	Jenkins          Jenkins
-	Docker           Docker
+	Jenkins          map[string]interface{} `yaml:"jenkins,omitempty"`
+	Docker           map[string]interface{} `yaml:"docker,omitempty"`
 	Helm             Helm
 }

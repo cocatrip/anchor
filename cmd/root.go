@@ -44,6 +44,8 @@ func initConfig() {
 		viper.SetConfigName("config.yaml")
 	}
 
+    viper.SetConfigType("yaml")
+
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}

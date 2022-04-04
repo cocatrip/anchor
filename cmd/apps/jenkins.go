@@ -1,27 +1,16 @@
 package apps
 
 import (
-	"fmt"
+/* "fmt"
 	"io/ioutil"
 	"reflect"
 	"regexp"
 	"strings"
+    "os"
+    "text/template" */
 )
 
-type Jenkins struct {
-	FILE             string
-	APPLICATION_NAME string
-	BUSINESS_NAME    string
-	TESTING_TAG      string
-	SERVER_NAME      string
-	LINK_SONARQUBE   string `yaml:"LINK_SONARQUBE,omitempty"`
-	SONARQUBE_URL    string `yaml:"SONARQUBE_URL,omitempty"`
-	SONARQUBE_KEY    string `yaml:"SONARQUBE_KEY,omitempty"`
-	JAR_APP_NAME     string `yaml:"JAR_APP_NAME,omitempty"`
-	CREDENTIAL_HELM  string `yaml:"CREDENTIAL_HELM,omitempty"`
-}
-
-func (j *Jenkins) New(c Config) {
+/* func (j *Jenkins) New(c Config) {
 	j.APPLICATION_NAME = c.APPLICATION_NAME
 	j.BUSINESS_NAME = c.BUSINESS_NAME
 	j.TESTING_TAG = c.TESTING_TAG
@@ -44,6 +33,20 @@ func (j *Jenkins) GetValues() ([]string, []string) {
 func (j *Jenkins) GetValuesLength() int {
 	value := reflect.ValueOf(j).Elem()
 	return value.NumField()
+}
+
+func (j *Jenkins) ParseJenkins() {
+    t := template.New("Jenkinsfile")
+    t = t.Delims("[[", "]]")
+    t, err := t.ParseFiles("Jenkinsfile")
+    if err != nil {
+        panic(err)
+    }
+
+    err = t.Execute(os.Stdout, j)
+    if err != nil {
+        panic(err)
+    }
 }
 
 func (j *Jenkins) ReadJenkins() [][]string {
@@ -82,4 +85,4 @@ func (j *Jenkins) TemplateJenkins() string {
 	}
 
 	return jenkinsFile
-}
+} */

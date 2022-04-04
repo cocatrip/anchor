@@ -1,6 +1,6 @@
 package apps
 
-import (
+/* import (
 	"fmt"
 	"io/ioutil"
 	"reflect"
@@ -79,4 +79,4 @@ func (d *Docker) TemplateDocker() string {
 	}
 
 	return dockerFile
-}
+} */

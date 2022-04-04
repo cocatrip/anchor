@@ -6,19 +6,54 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"strings"
+	"text/template"
 
 	"github.com/cocatrip/anchor/cmd/apps"
-	"github.com/cocatrip/anchor/pkg/common"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
-
 
 // templateCmd represents the template command
 var templateCmd = &cobra.Command{
 	Use:   "template",
 	Short: "parse & save file",
 	Long:  ``,
+}
+
+func Template(f string, m map[string]interface{}) {
+    t := template.New(f)
+    t = t.Delims("[[", "]]")
+    t, err := t.ParseFiles(f)
+    if err != nil {
+        panic(err)
+    }
+
+    file, err := os.Create(f+"-uat")
+    if err != nil {
+        panic(err)
+    }; defer file.Close()
+
+    err = t.Execute(file, m)
+    if err != nil {
+        panic(err)
+    }
+
+    contentByte, err := ioutil.ReadFile(f+"-uat")
+    if err != nil {
+        panic(err)
+    }; content := string(contentByte)
+
+    fmt.Println(content)
+
+    if strings.Contains(content, "<no value>") {
+        fmt.Println("ada yang no value")
+    } else {
+        fmt.Println("tidak ada yang no value")
+    }
 }
 
 var jenkins = &cobra.Command{
@@ -32,13 +67,7 @@ var jenkins = &cobra.Command{
 			panic(err)
 		}
 
-		c.Jenkins.New(c)
-
-		template := c.Jenkins.TemplateJenkins()
-
-		fmt.Println(template)
-
-		common.SaveFile(c.Jenkins.FILE, template)
+        // Template("Jenkinsfile", c.Jenkins)
 
 		return nil
 	},
@@ -51,17 +80,19 @@ var docker = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
-		if err := viper.Unmarshal(&c); err != nil {
-			panic(err)
-		}
+        f, err := ioutil.ReadFile(viper.ConfigFileUsed())
+        if err != nil {
+            panic(err)
+        }
 
-		c.Docker.New(c)
+        if err := yaml.Unmarshal(f, &c); err != nil {
+            panic(err)
+        }
 
-		template := c.Docker.TemplateDocker()
+        fmt.Println(c.Docker)
+        fmt.Println()
 
-		fmt.Println(template)
-
-		common.SaveFile(c.Docker.FILE, template)
+        Template("Dockerfile", c.Docker)
 
 		return nil
 	},

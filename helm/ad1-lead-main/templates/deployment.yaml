@@ -11,6 +11,7 @@ spec:
   selector:
     matchLabels:
       {{- include "ad1-lead-main.selectorLabels" . | nindent 6 }}
+      {{ .Values.asuasu }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
