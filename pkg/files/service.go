@@ -1,5 +1,6 @@
 package files
 
+// Service default template
 var Service string = `apiVersion: v1
 kind: Service
 metadata:

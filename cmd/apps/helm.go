@@ -9,14 +9,14 @@ import (
 	"github.com/cocatrip/anchor/pkg/files"
 )
 
+// Create helm directory and put contents into it.
+// Pass --no-secrets to not generate secret.yaml
 func InitHelm(c Config, isNoSecret bool) {
-	// testingTag := fmt.Sprintf("%v", c.Global["TESTING_TAG"])
 	appName := fmt.Sprintf("%v", c.Global["APPLICATION_NAME"])
 	helmDir := "helm"
 	chartDir := fmt.Sprintf("%s/%s", helmDir, appName)
 	templateDir := fmt.Sprintf("%s/templates", chartDir)
 
-	// create directory
 	_, err := os.Stat(helmDir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(helmDir, 0755)
@@ -25,7 +25,6 @@ func InitHelm(c Config, isNoSecret bool) {
 		}
 	}
 
-	// helm create inside helm dir
 	helmCreate := exec.Command("helm", "create", appName)
 	helmCreate.Dir = helmDir
 

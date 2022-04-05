@@ -3,7 +3,7 @@ pipeline {
     Version_Major = 1
     Version_Minor = 0
     Version_Patch = 0
-    IMAGE_NAME = "[[.Global.SERVER_NAME]]/[[.Global.BUSINESS_NAME]]/[[.Global.TESTING_TAG]]-[[.Global.APPLICATION_NAME]]"
+    IMAGE_NAME = "[[ .Global.SERVER_NAME ]]/[[ .Global.BUSINESS_NAME ]]/[[.Global.TESTING_TAG]]-[[.Global.APPLICATION_NAME]]"
     IMAGE_TAG = "${Version_Major}.${Version_Minor}.${Version_Patch}-${BUILD_TIMESTAMP}-${env.BUILD_NUMBER}"
     cluster_context = credentials('cluster-context')
     cluster_user = credentials('cluster-user')

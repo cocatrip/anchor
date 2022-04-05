@@ -1,5 +1,6 @@
 package files
 
+// Deployment default template
 var Deployment string = `apiVersion: apps/v1
 kind: Deployment
 metadata:

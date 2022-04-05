@@ -4,6 +4,7 @@ import (
 	"os"
 )
 
+// Save a string to a file
 func SaveFile(fileName string, content string) error {
 	// check file ada ga
 	if _, err := os.Stat(fileName); err != nil {
