@@ -1,6 +1,6 @@
 package files
 
-var Values string = `# Default values for ad1-lead-main.
+var valuesSecret string = `# Default values for ad1-lead-main.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -14,6 +14,9 @@ image:
 
 config:
   spring_active_profile: '[[ .Global.TESTING_TAG ]]'
+  secret_name: '[[ .Helm.SECRETDB_NAME ]]'
+  DB_USER: [[ .Helm.DB_USER ]]
+  DB_PASSWORD: [[ .Helm.DB_PASSWORD ]]
 
 readiness:
   path: /actuator/health/readiness
