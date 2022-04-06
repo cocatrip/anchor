@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 
 	"github.com/cocatrip/anchor/pkg/common"
 	"github.com/cocatrip/anchor/pkg/files"
@@ -11,13 +12,20 @@ import (
 
 // Create helm directory and put contents into it.
 // Pass --no-secrets to not generate secret.yaml
-func InitHelm(c Config, isNoSecret bool) {
+func InitHelm(c Config) {
 	appName := fmt.Sprintf("%v", c.Global["APPLICATION_NAME"])
+
 	helmDir := "helm"
 	chartDir := fmt.Sprintf("%s/%s", helmDir, appName)
 	templateDir := fmt.Sprintf("%s/templates", chartDir)
 
-	_, err := os.Stat(helmDir)
+    isNoSecretStr := fmt.Sprintf("%t", c.Helm["isNoSecret"])
+    isNoSecret, err := strconv.ParseBool(isNoSecretStr)
+    if err != nil {
+        panic(err)
+    }
+
+	_, err = os.Stat(helmDir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(helmDir, 0755)
 		if err != nil {
@@ -57,6 +65,7 @@ func InitHelm(c Config, isNoSecret bool) {
 
 	if !isNoSecret {
 		common.SaveFile(templateDir+"/secret.yaml", files.Secret)
+		fmt.Println("secret.yaml created")
 	}
 
 	common.SaveFile(chartDir+"/values.yaml", files.Values)

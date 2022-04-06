@@ -1,6 +1,6 @@
 package files
 
-var Values string = `# Default values for ad1-lead-main.
+var Values string = `# Default values for [[ .Global.APPLICATION_NAME ]].
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -10,10 +10,15 @@ image:
   repository: [[ .Global.SERVER_NAME ]]/[[ .Global.BUSINESS_NAME ]]/[[ .Global.TESTING_TAG ]]-[[ .Global.APPLICATION_NAME ]]
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: [[ Helm.Version_Major}.[[ Helm.Version_Minor ]].[[ Helm.Version_Patch ]]-[[ Helm.BUILD_TIMESTAMP ]]-[[ Helm.BUILD_NUMBER ]]
+  tag: [[ .Helm.Version_Major ]].[[ .Helm.Version_Minor ]].[[ .Helm.Version_Patch ]]-[[ .Helm.BUILD_TIMESTAMP ]]-[[ .Helm.BUILD_NUMBER ]]
 
 config:
   spring_active_profile: '[[ .Global.TESTING_TAG ]]'
+	[[- if not .Helm.isNoSecret ]]
+  secret_name: '[[ .Helm.SECRETDB_NAME ]]'
+  DB_USER: [[ .Helm.DB_USER ]]
+  DB_PASSWORD: [[ .Helm.DB_PASSWORD ]]
+	[[- end ]]
 
 readiness:
   path: /actuator/health/readiness
@@ -60,7 +65,7 @@ securityContext: {}
 service:
   type: [[ .Helm.SERVICE_TYPE ]]
   port: [[ .Helm.SERVICE_PORT ]]
-  targetport: [[ Helm.SERVICE_TARGETPORT ]]
+  targetport: [[ .Helm.SERVICE_TARGETPORT ]]
 
 ingress:
   enabled: false

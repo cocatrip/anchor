@@ -84,8 +84,9 @@ var helm = &cobra.Command{
 		if err != nil {
 			panic(err)
 		}
+        c.Helm["isNoSecret"] = isNoSecret
 
-		apps.InitHelm(c, isNoSecret)
+		apps.InitHelm(c)
 
 		templateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
 		resultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])

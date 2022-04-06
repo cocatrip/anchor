@@ -34,3 +34,6 @@ helm:
   MEM_LIMIT: 2048Mi
   CPU_REQUEST: 250m
   MEM_REQUEST: 256Mi
+  DB_USER:
+  DB_PASSWORD:
+  secret_name:
