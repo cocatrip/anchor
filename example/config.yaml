@@ -17,7 +17,7 @@ docker:
   # Arbitrary / Optional / Dynamic
   JAR_SNAPSHOT: id-0.0.1-snapshot
   JAR_ELASTIC: elastic-apm-agent-1.28.1
-  ELASTIC_URL: APM-SERVER.logging.svc.cluster.local
+  ELASTIC_URL: apm-server.logging.svc.cluster.local
   ELASTIC_PORT: 8200
 
 helm:
@@ -34,6 +34,6 @@ helm:
   MEM_LIMIT: 2048Mi
   CPU_REQUEST: 250m
   MEM_REQUEST: 256Mi
-  DB_USER:
-  DB_PASSWORD:
-  secret_name:
+  DB_USER: root
+  DB_PASSWORD: root
+  secret_name: regcred

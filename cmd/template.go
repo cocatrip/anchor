@@ -36,7 +36,11 @@ var jenkins = &cobra.Command{
 			panic(err)
 		}
 
-		c.Template("Jenkinsfile", "Jenkinsfile-uat")
+		apps.InitJenkins()
+
+		resultFileName := fmt.Sprintf("Jenkinsfile-%s", c.Global["TESTING_TAG"])
+
+		c.Template("Jenkinsfile", resultFileName)
 
 		return nil
 	},
@@ -58,7 +62,11 @@ var docker = &cobra.Command{
 			panic(err)
 		}
 
-		c.Template("Dockerfile", "Dockerfile-uat")
+		apps.InitDocker()
+
+		resultFileName := fmt.Sprintf("Dockerfile-%s", c.Global["TESTING_TAG"])
+
+		c.Template("Dockerfile", resultFileName)
 
 		return nil
 	},
