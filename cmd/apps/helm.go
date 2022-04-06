@@ -65,7 +65,6 @@ func InitHelm(c Config) {
 
 	if !isNoSecret {
 		common.SaveFile(templateDir+"/secret.yaml", files.Secret)
-		fmt.Println("secret.yaml created")
 	}
 
 	common.SaveFile(chartDir+"/values.yaml", files.Values)
