@@ -12,7 +12,7 @@ import (
 
 // Create helm directory and put contents into it.
 // Pass --no-secrets to not generate secret.yaml
-func InitHelm(c Config) {
+func InitHelm(c Config) error {
 	appName := fmt.Sprintf("%v", c.Global["APPLICATION_NAME"])
 
 	helmDir := "helm"
@@ -22,14 +22,14 @@ func InitHelm(c Config) {
 	isNoSecretStr := fmt.Sprintf("%t", c.Helm["isNoSecret"])
 	isNoSecret, err := strconv.ParseBool(isNoSecretStr)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	_, err = os.Stat(helmDir)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(helmDir, 0755)
 		if err != nil {
-			panic(err)
+			return err
 		}
 	}
 
@@ -37,7 +37,7 @@ func InitHelm(c Config) {
 	helmCreate.Dir = helmDir
 
 	if err := helmCreate.Run(); err != nil {
-		panic(err)
+		return err
 	}
 
 	removeList := []string{
@@ -49,7 +49,7 @@ func InitHelm(c Config) {
 
 	for _, i := range removeList {
 		if err := os.RemoveAll(i); err != nil {
-			panic(err)
+			return err
 		}
 	}
 
@@ -67,4 +67,5 @@ func InitHelm(c Config) {
 	}
 
 	common.SaveFile(chartDir+"/values.yaml", files.Values)
+	return nil
 }

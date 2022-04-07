@@ -15,15 +15,17 @@ import (
 )
 
 var templateCmd = &cobra.Command{
-	Use:   "template",
-	Short: "Parse & save file",
-	Long:  ``,
+	Use:       "template",
+	Short:     "Parse & save file",
+	Long:      ``,
+	ValidArgs: []string{"jenkins", "docker", "helm", "all"},
 }
 
-var jenkins = &cobra.Command{
-	Use:   "jenkins",
-	Short: "Parse jenkins from jenkinsfile",
-	Long:  ``,
+var jenkinsCmd = &cobra.Command{
+	Use:          "jenkins",
+	Short:        "Parse jenkins from jenkinsfile",
+	Long:         ``,
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
@@ -40,16 +42,20 @@ var jenkins = &cobra.Command{
 
 		resultFileName := fmt.Sprintf("Jenkinsfile-%s", c.Global["TESTING_TAG"])
 
-		c.Template("Jenkinsfile", resultFileName)
+		err = c.Template("Jenkinsfile", resultFileName)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	},
 }
 
-var docker = &cobra.Command{
-	Use:   "docker",
-	Short: "Parse docker from dockerfile",
-	Long:  ``,
+var dockerCmd = &cobra.Command{
+	Use:          "docker",
+	Short:        "Parse docker from dockerfile",
+	Long:         ``,
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
@@ -66,16 +72,20 @@ var docker = &cobra.Command{
 
 		resultFileName := fmt.Sprintf("Dockerfile-%s", c.Global["TESTING_TAG"])
 
-		c.Template("Dockerfile", resultFileName)
+		err = c.Template("Dockerfile", resultFileName)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	},
 }
 
-var helm = &cobra.Command{
-	Use:   "helm",
-	Short: "Parse helm from values.yaml",
-	Long:  ``,
+var helmCmd = &cobra.Command{
+	Use:          "helm",
+	Short:        "Parse helm from values.yaml",
+	Long:         ``,
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
@@ -99,16 +109,20 @@ var helm = &cobra.Command{
 		templateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
 		resultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
 
-		c.Template(templateFileName, resultFileName)
+		err = c.Template(templateFileName, resultFileName)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	},
 }
 
-var all = &cobra.Command{
-	Use:   "all",
-	Short: "Parse & save all (Jenkinsfile, Dockerfile, Helm)",
-	Long:  ``,
+var allCmd = &cobra.Command{
+	Use:          "all",
+	Short:        "Parse & save all (Jenkinsfile, Dockerfile, Helm)",
+	Long:         ``,
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
@@ -124,18 +138,24 @@ var all = &cobra.Command{
 		// Jenkins
 		apps.InitJenkins()
 		jenkinsFileName := fmt.Sprintf("Jenkinsfile-%s", c.Global["TESTING_TAG"])
-		c.Template("Jenkinsfile", jenkinsFileName)
+		err = c.Template("Jenkinsfile", jenkinsFileName)
+		if err != nil {
+			return err
+		}
 
-	fmt.Println()
-	fmt.Println()
+		fmt.Println()
+		fmt.Println()
 
 		// Docker
 		apps.InitDocker()
 		dockerFileName := fmt.Sprintf("Dockerfile-%s", c.Global["TESTING_TAG"])
-		c.Template("Dockerfile", dockerFileName)
+		err = c.Template("Dockerfile", dockerFileName)
+		if err != nil {
+			return err
+		}
 
-	fmt.Println()
-	fmt.Println()
+		fmt.Println()
+		fmt.Println()
 
 		// Helm
 		isNoSecret, err := cmd.Flags().GetBool("no-secret")
@@ -143,10 +163,16 @@ var all = &cobra.Command{
 			return err
 		}
 		c.Helm["isNoSecret"] = isNoSecret
-		apps.InitHelm(c)
+		err = apps.InitHelm(c)
+		if err != nil {
+			return err
+		}
 		helmTemplateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
 		helmResultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
-		c.Template(helmTemplateFileName, helmResultFileName)
+		err = c.Template(helmTemplateFileName, helmResultFileName)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	},
@@ -156,14 +182,14 @@ func init() {
 	// nambahin command template ke anchor
 	rootCmd.AddCommand(templateCmd)
 	// nambahin command jenkins ke template
-	templateCmd.AddCommand(jenkins)
+	templateCmd.AddCommand(jenkinsCmd)
 	// nambahin command docker ke template
-	templateCmd.AddCommand(docker)
+	templateCmd.AddCommand(dockerCmd)
 	// nambahin command helm ke template
-	templateCmd.AddCommand(helm)
+	templateCmd.AddCommand(helmCmd)
 	// nambahin command all ke template
-	templateCmd.AddCommand(all)
+	templateCmd.AddCommand(allCmd)
 
-	helm.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
-	all.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
+	helmCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
+	allCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
 }

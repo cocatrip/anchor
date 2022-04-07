@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	// "github.com/cocatrip/anchor/pkg/common"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -32,8 +33,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config.yaml", "config file")
-
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func initConfig() {
@@ -43,10 +42,5 @@ func initConfig() {
 		viper.AddConfigPath(".")
 		viper.SetConfigName("config.yaml")
 	}
-
-    viper.SetConfigType("yaml")
-
-	if err := viper.ReadInConfig(); err != nil {
-		panic(err)
-	}
+	viper.SetConfigType("yaml")
 }

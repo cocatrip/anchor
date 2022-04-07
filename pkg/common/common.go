@@ -7,10 +7,10 @@ import (
 )
 
 // Success color
-var Success = color.New(color.FgGreen, color.Bold)
-
-// Error color
-var Error = color.New(color.FgRed, color.Bold)
+func Success(s string) {
+	color := color.New(color.FgGreen, color.Bold)
+	color.Fprintf(os.Stdout, "%s\n", s)
+}
 
 // Save a string to a file
 func SaveFile(fileName string, content string) error {
