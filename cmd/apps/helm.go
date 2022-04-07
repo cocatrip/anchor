@@ -43,7 +43,6 @@ func InitHelm(c Config) {
 	removeList := []string{
 		templateDir + "/deployment.yaml",
 		templateDir + "/service.yaml",
-		templateDir + "/tests",
 		chartDir + "/values.yaml",
 		chartDir + "/charts",
 	}
