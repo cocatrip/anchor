@@ -5,3 +5,4 @@ Jenkinsfile
 Jenkinsfile-*
 Dockerfile
 Dockerfile-*
+config.yaml
