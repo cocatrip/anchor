@@ -1,12 +1,15 @@
 package apps
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"github.com/cocatrip/anchor/pkg/common"
 )
 
 type Config struct {
@@ -22,7 +25,6 @@ type Config struct {
 
 func (c *Config) Template(templateFileName string, resultFileName string) {
 	// resultFileName := fmt.Sprintf("%s-%s", templateFileName, c.Global["TESTING_TAG"])
-
 	t := template.New(filepath.Base(templateFileName))
 	t = t.Delims("[[", "]]")
 
@@ -51,9 +53,34 @@ func (c *Config) Template(templateFileName string, resultFileName string) {
 	}
 	content := string(contentByte)
 
+	fmt.Println(content)
+
 	if strings.Contains(content, "<no value>") {
-		fmt.Println("ada yang no value")
+		printNoValues(resultFileName)
 	} else {
-		fmt.Println("tidak ada yang no value")
+		common.Success.Println("tidak ada yang no value")
+	}
+}
+
+func printNoValues(fileName string) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+	var text []string
+
+	for scanner.Scan() {
+		text = append(text, scanner.Text())
+	}
+
+	common.Error.Printf("Err: <no value> found in %s:\n", fileName)
+	for n, line := range text {
+		if strings.Contains(line, "<no value>") {
+			fmt.Printf("\t%d: %s\n", n, line)
+		}
 	}
 }

@@ -2,7 +2,15 @@ package common
 
 import (
 	"os"
+
+	"github.com/fatih/color"
 )
+
+// Success color
+var Success = color.New(color.FgGreen, color.Bold)
+
+// Error color
+var Error = color.New(color.FgRed, color.Bold)
 
 // Save a string to a file
 func SaveFile(fileName string, content string) error {

@@ -16,24 +16,24 @@ import (
 
 var templateCmd = &cobra.Command{
 	Use:   "template",
-	Short: "parse & save file",
+	Short: "Parse & save file",
 	Long:  ``,
 }
 
 var jenkins = &cobra.Command{
 	Use:   "jenkins",
-	Short: "parse jenkins from jenkinsfile",
+	Short: "Parse jenkins from jenkinsfile",
 	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
 		f, err := ioutil.ReadFile(viper.ConfigFileUsed())
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		if err := yaml.Unmarshal(f, &c); err != nil {
-			panic(err)
+			return err
 		}
 
 		apps.InitJenkins()
@@ -48,18 +48,18 @@ var jenkins = &cobra.Command{
 
 var docker = &cobra.Command{
 	Use:   "docker",
-	Short: "parse docker from dockerfile",
+	Short: "Parse docker from dockerfile",
 	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
 		f, err := ioutil.ReadFile(viper.ConfigFileUsed())
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		if err := yaml.Unmarshal(f, &c); err != nil {
-			panic(err)
+			return err
 		}
 
 		apps.InitDocker()
@@ -74,25 +74,26 @@ var docker = &cobra.Command{
 
 var helm = &cobra.Command{
 	Use:   "helm",
-	Short: "parse helm from values.yaml",
+	Short: "Parse helm from values.yaml",
 	Long:  ``,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var c apps.Config
 
 		f, err := ioutil.ReadFile(viper.ConfigFileUsed())
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		if err := yaml.Unmarshal(f, &c); err != nil {
-			panic(err)
+			return err
 		}
 
 		isNoSecret, err := cmd.Flags().GetBool("no-secret")
 		if err != nil {
-			panic(err)
+			return err
 		}
-        c.Helm["isNoSecret"] = isNoSecret
+
+		c.Helm["isNoSecret"] = isNoSecret
 
 		apps.InitHelm(c)
 
@@ -100,6 +101,42 @@ var helm = &cobra.Command{
 		resultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
 
 		c.Template(templateFileName, resultFileName)
+
+		return nil
+	},
+}
+
+var all = &cobra.Command{
+	Use:   "all",
+	Short: "Parse & save all (Jenkinsfile, Dockerfile, Helm)",
+	Long:  ``,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		var c apps.Config
+
+		f, err := ioutil.ReadFile(viper.ConfigFileUsed())
+		if err != nil {
+			return err
+		}
+
+		if err := yaml.Unmarshal(f, &c); err != nil {
+			return err
+		}
+
+		// Jenkins
+		apps.InitJenkins()
+		jenkinsFileName := fmt.Sprintf("Jenkinsfile%s", c.Global["TESTING_TAG"])
+		c.Template("Jenkinsfile", jenkinsFileName)
+
+		// Docker
+		apps.InitDocker()
+		dockerFileName := fmt.Sprintf("Dockerfile-%s", c.Global["TESTING_TAG"])
+		c.Template("Dockerfile", dockerFileName)
+
+		// Helm
+		apps.InitHelm(c)
+		helmTemplateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
+		helmResultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
+		c.Template(helmTemplateFileName, helmResultFileName)
 
 		return nil
 	},

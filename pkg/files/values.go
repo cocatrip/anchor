@@ -1,6 +1,6 @@
 package files
 
-var Values string = `# Default values for [[ .Global.APPLICATION_NAME ]].
+var Values string = `# Default values for ad1-lead-main.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -14,23 +14,12 @@ image:
 
 config:
   spring_active_profile: '[[ .Global.TESTING_TAG ]]'
-	[[- if not .Helm.isNoSecret ]]
+  spring_active_profile: '[[ .Global.TESTING_TAG ]]'
+  [[- if not .Helm.isNoSecret ]]
   secret_name: '[[ .Helm.SECRETDB_NAME ]]'
   DB_USER: [[ .Helm.DB_USER ]]
   DB_PASSWORD: [[ .Helm.DB_PASSWORD ]]
-	[[- end ]]
-
-readiness:
-  path: /actuator/health/readiness
-  failureThreshold: 3
-  initialDelaySeconds: 10
-  periodSeconds: 10
-
-liveness:
-  path: /actuator/health/liveness
-  failureThreshold: 3
-  initialDelaySeconds: 10
-  periodSeconds: 10
+  [[- end ]]
 
 imagePullSecrets:
   - name: regcred
@@ -44,7 +33,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: "[[ .Global.APPLICATION_NAME ]]"
 
 podAnnotations: {}
 
