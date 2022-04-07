@@ -94,7 +94,6 @@ var helm = &cobra.Command{
 		}
 
 		c.Helm["isNoSecret"] = isNoSecret
-
 		apps.InitHelm(c)
 
 		templateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
@@ -124,15 +123,26 @@ var all = &cobra.Command{
 
 		// Jenkins
 		apps.InitJenkins()
-		jenkinsFileName := fmt.Sprintf("Jenkinsfile%s", c.Global["TESTING_TAG"])
+		jenkinsFileName := fmt.Sprintf("Jenkinsfile-%s", c.Global["TESTING_TAG"])
 		c.Template("Jenkinsfile", jenkinsFileName)
+
+	fmt.Println()
+	fmt.Println()
 
 		// Docker
 		apps.InitDocker()
 		dockerFileName := fmt.Sprintf("Dockerfile-%s", c.Global["TESTING_TAG"])
 		c.Template("Dockerfile", dockerFileName)
 
+	fmt.Println()
+	fmt.Println()
+
 		// Helm
+		isNoSecret, err := cmd.Flags().GetBool("no-secret")
+		if err != nil {
+			return err
+		}
+		c.Helm["isNoSecret"] = isNoSecret
 		apps.InitHelm(c)
 		helmTemplateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
 		helmResultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
@@ -151,6 +161,9 @@ func init() {
 	templateCmd.AddCommand(docker)
 	// nambahin command helm ke template
 	templateCmd.AddCommand(helm)
+	// nambahin command all ke template
+	templateCmd.AddCommand(all)
 
 	helm.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
+	all.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
 }

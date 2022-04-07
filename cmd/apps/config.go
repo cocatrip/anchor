@@ -53,6 +53,11 @@ func (c *Config) Template(templateFileName string, resultFileName string) {
 	}
 	content := string(contentByte)
 
+	fmt.Println(resultFileName)
+
+	seperator := strings.Repeat("-",len(resultFileName))
+	fmt.Println(seperator)
+
 	fmt.Println(content)
 
 	if strings.Contains(content, "<no value>") {

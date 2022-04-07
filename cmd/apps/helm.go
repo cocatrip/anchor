@@ -19,11 +19,11 @@ func InitHelm(c Config) {
 	chartDir := fmt.Sprintf("%s/%s", helmDir, appName)
 	templateDir := fmt.Sprintf("%s/templates", chartDir)
 
-    isNoSecretStr := fmt.Sprintf("%t", c.Helm["isNoSecret"])
-    isNoSecret, err := strconv.ParseBool(isNoSecretStr)
-    if err != nil {
-        panic(err)
-    }
+	isNoSecretStr := fmt.Sprintf("%t", c.Helm["isNoSecret"])
+	isNoSecret, err := strconv.ParseBool(isNoSecretStr)
+	if err != nil {
+		panic(err)
+	}
 
 	_, err = os.Stat(helmDir)
 	if os.IsNotExist(err) {
