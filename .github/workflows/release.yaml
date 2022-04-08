@@ -16,6 +16,7 @@ jobs:
     - uses: fregante/release-with-changelog@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        title: Anchor {tag}
 
   releases-matrix:
     name: Release Binary
