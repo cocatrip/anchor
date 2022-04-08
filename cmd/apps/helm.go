@@ -67,5 +67,6 @@ func InitHelm(c Config) error {
 	}
 
 	common.SaveFile(chartDir+"/values.yaml", files.Values)
+
 	return nil
 }

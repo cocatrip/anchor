@@ -7,6 +7,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/cocatrip/anchor/cmd/apps"
 	"github.com/spf13/cobra"
@@ -103,11 +104,15 @@ var helmCmd = &cobra.Command{
 			return err
 		}
 
-		c.Helm["isNoSecret"] = isNoSecret
-		apps.InitHelm(c)
-
 		templateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
 		resultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
+
+		c.Helm["isNoSecret"] = isNoSecret
+
+		_, err = os.Stat(templateFileName)
+		if os.IsNotExist(err) {
+			apps.InitHelm(c)
+		}
 
 		err = c.Template(templateFileName, resultFileName)
 		if err != nil {
