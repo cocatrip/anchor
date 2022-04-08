@@ -19,6 +19,7 @@ jobs:
         title: Anchor {tag}
 
   releases-matrix:
+    needs: release-changelog
     name: Release Binary
     runs-on: ubuntu-latest
     strategy:
