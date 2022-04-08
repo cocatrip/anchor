@@ -14,6 +14,11 @@ jobs:
         goarch: [amd64]
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 50
+    - uses: fregante/release-with-changelog@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
     - uses: wangyoucao577/go-release-action@v1.25
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
