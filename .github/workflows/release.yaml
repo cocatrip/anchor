@@ -1,11 +1,12 @@
-name: Release Binary
+name: Release
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   release-changelog:
+    name: Release Changelog
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
