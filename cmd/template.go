@@ -184,15 +184,11 @@ var allCmd = &cobra.Command{
 }
 
 func init() {
-	// nambahin command template ke anchor
 	rootCmd.AddCommand(templateCmd)
-	// nambahin command jenkins ke template
+
 	templateCmd.AddCommand(jenkinsCmd)
-	// nambahin command docker ke template
 	templateCmd.AddCommand(dockerCmd)
-	// nambahin command helm ke template
 	templateCmd.AddCommand(helmCmd)
-	// nambahin command all ke template
 	templateCmd.AddCommand(allCmd)
 
 	helmCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")

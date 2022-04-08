@@ -14,13 +14,13 @@ import (
 )
 
 type Config struct {
-	// global values
+	// Global values
 	Global map[string]interface{} `yaml:",inline"`
-	// jenkins values
+	// Jenkins values
 	Jenkins map[string]interface{} `yaml:"jenkins,omitempty"`
-	// docker values
+	// Docker values
 	Docker map[string]interface{} `yaml:"docker,omitempty"`
-	// helm values
+	// Helm values
 	Helm map[string]interface{} `yaml:"helm,omitempty"`
 }
 

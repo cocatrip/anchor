@@ -5,7 +5,6 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	// "github.com/cocatrip/anchor/pkg/common"
 	"os"
 
 	"github.com/spf13/cobra"
