@@ -104,7 +104,7 @@ var helmCmd = &cobra.Command{
 			return err
 		}
 
-		templateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
+		templateFileName := "helm/values.yaml"
 		resultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
 
 		c.Helm["isNoSecret"] = isNoSecret
@@ -172,7 +172,7 @@ var allCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		helmTemplateFileName := fmt.Sprintf("helm/%s/values.yaml", c.Global["APPLICATION_NAME"])
+		helmTemplateFileName := "helm/values.yaml"
 		helmResultFileName := fmt.Sprintf("helm/%s/values-%s.yaml", c.Global["APPLICATION_NAME"], c.Global["TESTING_TAG"])
 		err = c.Template(helmTemplateFileName, helmResultFileName)
 		if err != nil {

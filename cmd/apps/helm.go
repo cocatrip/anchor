@@ -66,7 +66,7 @@ func InitHelm(c Config) error {
 		common.SaveFile(templateDir+"/secret.yaml", files.Secret)
 	}
 
-	common.SaveFile(chartDir+"/values.yaml", files.Values)
+	common.SaveFile("helm/values.yaml", files.Values)
 
 	return nil
 }

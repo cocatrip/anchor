@@ -14,7 +14,6 @@ image:
 
 config:
   spring_active_profile: '[[ .Global.TESTING_TAG ]]'
-  spring_active_profile: '[[ .Global.TESTING_TAG ]]'
   [[- if not .Helm.isNoSecret ]]
   secret_name: '[[ .Helm.SECRETDB_NAME ]]'
   DB_USER: [[ .Helm.DB_USER ]]
