@@ -71,6 +71,10 @@ spec:
             [[- if eq .Global.TEMPLATE "maven" ]]
             mvn  clean package 
             [[- end ]]
+            [[- if eq .Global.TEMPLATE "node" ]]
+            npm install
+						npm run build
+            [[- end ]]
           """
         }
       }
