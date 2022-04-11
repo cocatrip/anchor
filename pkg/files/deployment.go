@@ -41,6 +41,7 @@ spec:
                   configMapKeyRef:
                       key: SPRING_ACTIVE_PROFILE
                       name: {{ .Release.Name }}
+  					[[- if not .Helm.isNoSecret ]]
             - name: DB_USER
               valueFrom:
                   secretKeyRef:
@@ -51,6 +52,7 @@ spec:
                   secretKeyRef:
                       key: DB_PASSWORD
                       name: {{ .Values.config.secret_name }}                  
+						[[- end ]]
           ports:
             - name: http
               containerPort: {{ .Values.service.targetport }}

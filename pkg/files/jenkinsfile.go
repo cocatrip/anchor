@@ -124,10 +124,10 @@ spec:
               kubectl config set-context ${cluster_context} --cluster=kubernetes --user=${cluster_user}
               kubectl config use-context ${cluster_context}
               kubectl get nodes
-              helm upgrade -i [[ .Global.APPLICATION_NAME ]] helm/[[ .Global.APPLICATION_NAME ]] -f helm/[[ .Global.APPLICATION_NAME ]]/values-[[ .Global.TESTING_TAG ]].yaml -n [[ .Helm.NAMESPACE ]]  --set=image.tag=${IMAGE_TAG}
-              kubectl rollout status deployment/[[ .Global.APPLICATION_NAME ]] -n [[ .Helm.NAMESPACE ]]
-              kubectl get pods -n [[ .Helm.NAMESPACE ]]
-              helm ls -n [[ .Helm.NAMESPACE ]]
+              helm upgrade -i [[ .Global.APPLICATION_NAME ]] helm/[[ .Global.APPLICATION_NAME ]] -f helm/[[ .Global.APPLICATION_NAME ]]/values-[[ .Global.TESTING_TAG ]].yaml -n [[ .Jenkins.NAMESPACE ]]  --set=image.tag=${IMAGE_TAG}
+              kubectl rollout status deployment/[[ .Global.APPLICATION_NAME ]] -n [[ .Jenkins.NAMESPACE ]]
+              kubectl get pods -n [[ .Jenkins.NAMESPACE ]]
+              helm ls -n [[ .Jenkins.NAMESPACE ]]
             """
           }
         }

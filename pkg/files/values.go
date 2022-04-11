@@ -10,7 +10,7 @@ image:
   repository: [[ .Global.SERVER_NAME ]]/[[ .Global.BUSINESS_NAME ]]/[[ .Global.TESTING_TAG ]]-[[ .Global.APPLICATION_NAME ]]
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: [[ .Helm.Version_Major ]].[[ .Helm.Version_Minor ]].[[ .Helm.Version_Patch ]]-[[ .Helm.BUILD_TIMESTAMP ]]-[[ .Helm.BUILD_NUMBER ]]
+  tag: "[[ .Helm.Version_Major ]].[[ .Helm.Version_Minor ]].[[ .Helm.Version_Patch ]]-[[ .Helm.BUILD_TIMESTAMP ]]-[[ .Helm.BUILD_NUMBER ]]"
 
 config:
   spring_active_profile: '[[ .Global.TESTING_TAG ]]'
