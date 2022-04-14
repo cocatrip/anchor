@@ -109,7 +109,7 @@ spec:
           sh """
             echo "******** currently executing kaniko stage ********"
             cp $workspace/target/[[ .Jenkins.JAR_APP_NAME ]] ./[[ .Jenkins.JAR_APP_NAME ]]
-            /kaniko/executor --dockerfile $(pwd)/Dockerfile-[[ .Global.TESTING_TAG ]] --context $(pwd) --destination="${IMAGE_NAME}:${IMAGE_TAG}"
+            /kaniko/executor --dockerfile `+"`"+`pwd`+"`"+`/Dockerfile-[[ .Global.TESTING_TAG ]] --context `+"`"+`pwd`+"`"+` --destination="${IMAGE_NAME}:${IMAGE_TAG}"
           """
         }
       }
