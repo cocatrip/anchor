@@ -7,6 +7,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/cocatrip/anchor/pkg/files"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -22,6 +23,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	files.LoadFiles()
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)

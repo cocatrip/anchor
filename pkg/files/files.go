@@ -16,6 +16,7 @@ var Secret string
 var Service string
 var Values string
 
+// Load files according to project template
 func LoadFiles() {
 	if Project == "maven" {
 		ConfigMap = maven.ConfigMap

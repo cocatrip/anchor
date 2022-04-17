@@ -9,7 +9,7 @@ Anchor will look for these variable inside config.yaml and exit if one or more v
 # Usage
 
 ## Define variable inside config.yaml
-```
+```yaml
 // config.yaml
 APPLICATION_NAME: ad1-lead-main
 BUSINESS_NAME: administrasi
@@ -22,7 +22,7 @@ jenkins:
 ```
 
 ## Using variable
-```
+```groovy
 // Jenkinsfile
 pipeline {
   environment {
@@ -44,4 +44,10 @@ pipeline {
   }
   ...
 }
+```
+
+## Enabling command completion
+
+```
+anchor completion [shell] --help
 ```
