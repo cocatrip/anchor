@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"github.com/cocatrip/anchor/cmd/apps"
+	"github.com/cocatrip/anchor/pkg/files"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
@@ -191,6 +192,7 @@ func init() {
 	templateCmd.AddCommand(helmCmd)
 	templateCmd.AddCommand(allCmd)
 
+	templateCmd.Flags().StringVarP(&files.Project, "template", "t", "maven", "maven, node, or flutter")
 	helmCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
 	allCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
 }

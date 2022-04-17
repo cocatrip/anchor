@@ -1,4 +1,4 @@
-package files
+package node
 
 // ConfigMap default template
 var ConfigMap string = `apiVersion: v1

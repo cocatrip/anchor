@@ -1,4 +1,4 @@
-package files
+package maven
 
 var Dockerfile string = `FROM trainingad1/java11
 RUN java -version

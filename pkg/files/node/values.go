@@ -1,4 +1,4 @@
-package files
+package node
 
 var Values string = `# Default values for ad1-lead-main.
 # This is a YAML-formatted file.

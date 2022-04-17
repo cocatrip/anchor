@@ -1,4 +1,4 @@
-package files
+package flutter
 
 var Jenkinsfile string = `pipeline {
   environment {
@@ -69,7 +69,7 @@ spec:
           sh """
             echo "******** currently executing Build stage ********"
             [[- if eq .Global.TEMPLATE "maven" ]]
-            mvn  clean package 
+            mvn clean package 
             [[- end ]]
             [[- if eq .Global.TEMPLATE "node" ]]
             npm install

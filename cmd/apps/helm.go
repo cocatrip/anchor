@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/cocatrip/anchor/pkg/common"
-	"github.com/cocatrip/anchor/pkg/files"
+	"github.com/cocatrip/anchor/pkg/files/maven"
 )
 
 // Create helm directory and put contents into it.
@@ -53,20 +53,20 @@ func InitHelm(c Config) error {
 		}
 	}
 
-	common.SaveFile(templateDir+"/deployment.yaml", files.Deployment)
+	common.SaveFile(templateDir+"/deployment.yaml", maven.Deployment)
 	c.Template(templateDir+"/deployment.yaml", templateDir+"/deployment.yaml")
 
-	common.SaveFile(templateDir+"/service.yaml", files.Service)
+	common.SaveFile(templateDir+"/service.yaml", maven.Service)
 	c.Template(templateDir+"/service.yaml", templateDir+"/service.yaml")
 
-	common.SaveFile(templateDir+"/configmap.yaml", files.ConfigMap)
+	common.SaveFile(templateDir+"/configmap.yaml", maven.ConfigMap)
 	c.Template(templateDir+"/configmap.yaml", templateDir+"/configmap.yaml")
 
 	if !isNoSecret {
-		common.SaveFile(templateDir+"/secret.yaml", files.Secret)
+		common.SaveFile(templateDir+"/secret.yaml", maven.Secret)
 	}
 
-	common.SaveFile("helm/values.yaml", files.Values)
+	common.SaveFile("helm/values.yaml", maven.Values)
 
 	return nil
 }

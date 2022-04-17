@@ -7,7 +7,7 @@ import (
 	"github.com/cocatrip/anchor/pkg/files"
 )
 
-// check if Jenkinsfile exists, if it doesn't create it
+// check if Dockerfile exists, if it doesn't create it
 func InitDocker() {
 	_, err := os.Stat("Dockerfile")
 	if os.IsNotExist(err) {

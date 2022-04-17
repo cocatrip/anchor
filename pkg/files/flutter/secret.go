@@ -1,4 +1,4 @@
-package files
+package flutter
 
 var Secret string = `apiVersion: v1
 kind: Secret

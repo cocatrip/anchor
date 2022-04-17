@@ -1,4 +1,4 @@
-package files
+package flutter
 
 // Service default template
 var Service string = `apiVersion: v1

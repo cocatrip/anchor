@@ -1,4 +1,4 @@
-package files
+package maven
 
 var Deployment string = `apiVersion: apps/v1
 kind: Deployment
