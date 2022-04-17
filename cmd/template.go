@@ -23,7 +23,7 @@ var templateCmd = &cobra.Command{
 	ValidArgs: []string{"jenkins", "docker", "helm", "all"},
 }
 
-var jenkinsCmd = &cobra.Command{
+var templateJenkinsCmd = &cobra.Command{
 	Use:          "jenkins",
 	Short:        "Parse jenkins from jenkinsfile",
 	Long:         ``,
@@ -53,7 +53,7 @@ var jenkinsCmd = &cobra.Command{
 	},
 }
 
-var dockerCmd = &cobra.Command{
+var templateDockerCmd = &cobra.Command{
 	Use:          "docker",
 	Short:        "Parse docker from dockerfile",
 	Long:         ``,
@@ -83,7 +83,7 @@ var dockerCmd = &cobra.Command{
 	},
 }
 
-var helmCmd = &cobra.Command{
+var templateHelmCmd = &cobra.Command{
 	Use:          "helm",
 	Short:        "Parse helm from values.yaml",
 	Long:         ``,
@@ -124,7 +124,7 @@ var helmCmd = &cobra.Command{
 	},
 }
 
-var allCmd = &cobra.Command{
+var templateAllCmd = &cobra.Command{
 	Use:          "all",
 	Short:        "Parse & save all (Jenkinsfile, Dockerfile, Helm)",
 	Long:         ``,
@@ -187,12 +187,12 @@ var allCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(templateCmd)
 
-	templateCmd.AddCommand(jenkinsCmd)
-	templateCmd.AddCommand(dockerCmd)
-	templateCmd.AddCommand(helmCmd)
-	templateCmd.AddCommand(allCmd)
+	templateCmd.AddCommand(templateJenkinsCmd)
+	templateCmd.AddCommand(templateDockerCmd)
+	templateCmd.AddCommand(templateHelmCmd)
+	templateCmd.AddCommand(templateAllCmd)
 
 	templateCmd.Flags().StringVarP(&files.Project, "type", "t", "maven", "maven, node, or flutter")
-	helmCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
-	allCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
+	templateHelmCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
+	templateAllCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
 }
