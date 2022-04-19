@@ -1,3 +1,4 @@
+// commonly used function in apps package
 package apps
 
 import (
@@ -14,29 +15,29 @@ func success(s string) {
 
 // Save a string to a file
 func saveFile(fileName string, content string) error {
-	// check file ada ga
+	// check if file exist
 	if _, err := os.Stat(fileName); err != nil {
-		// kalo gada create
+		// if not exist then create file
 		file, err := os.Create(fileName)
 		if err != nil {
 			return err
 		}
 		defer file.Close()
 
-		// save file
+		// save the file
 		_, err = file.WriteAt([]byte(content), 0)
 		if err != nil {
 			return err
 		}
 	} else {
-		// kalo ada open
+		// if file exist then open file
 		file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 		if err != nil {
 			return err
 		}
 		defer file.Close()
 
-		// save file
+		// save the file
 		_, err = file.WriteAt([]byte(content), 0)
 		if err != nil {
 			return err

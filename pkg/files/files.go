@@ -1,6 +1,8 @@
 package files
 
 import (
+	_ "embed"
+
 	"github.com/cocatrip/anchor/pkg/files/flutter"
 	"github.com/cocatrip/anchor/pkg/files/maven"
 	"github.com/cocatrip/anchor/pkg/files/node"

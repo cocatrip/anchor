@@ -1,7 +1,5 @@
-package maven
-
-// ConfigMap default template
-var ConfigMap string = `apiVersion: v1
+# ini maven
+apiVersion: v1
 kind: ConfigMap
 metadata:
   annotations:
@@ -10,4 +8,4 @@ metadata:
   labels:
     {{- include "[[ .Global.APPLICATION_NAME ]].labels" . | nindent 4 }}
 data:
-  SPRING_ACTIVE_PROFILE: "{{ .Values.config.spring_active_profile}}"`
+  SPRING_ACTIVE_PROFILE: "{{ .Values.config.spring_active_profile}}"

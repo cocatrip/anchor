@@ -1,3 +1,4 @@
+// commonly used function in cmd package
 package cmd
 
 import (
