@@ -1,6 +1,7 @@
 package maven
 
-var Jenkinsfile string = `pipeline {
+var Jenkinsfile string = `
+pipeline {
   environment {
     Version_Major = 1
     Version_Minor = 0
@@ -68,13 +69,7 @@ spec:
         container('maven') {
           sh """
             echo "******** currently executing Build stage ********"
-            [[- if eq .Global.TEMPLATE "maven" ]]
             mvn clean package 
-            [[- end ]]
-            [[- if eq .Global.TEMPLATE "node" ]]
-            npm install
-						npm run build
-            [[- end ]]
           """
         }
       }

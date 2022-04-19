@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
-
-	"github.com/cocatrip/anchor/pkg/common"
 )
 
 type Config struct {
@@ -64,7 +62,7 @@ func (c *Config) Template(templateFileName string, resultFileName string) error 
 	if strings.Contains(content, "<no value>") {
 		return errorNoValues(resultFileName)
 	} else {
-		common.Success("SUCCESS!")
+		success("SUCCESS!")
 		return nil
 	}
 }

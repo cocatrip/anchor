@@ -1,6 +1,7 @@
 package node
 
-var Values string = `# Default values for ad1-lead-main.
+var Values string = `
+# Default values for [[ .Global.APPLICATION_NAME ]].
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 

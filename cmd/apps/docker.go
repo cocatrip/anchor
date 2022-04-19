@@ -3,7 +3,6 @@ package apps
 import (
 	"os"
 
-	"github.com/cocatrip/anchor/pkg/common"
 	"github.com/cocatrip/anchor/pkg/files"
 )
 
@@ -11,6 +10,6 @@ import (
 func InitDocker() {
 	_, err := os.Stat("Dockerfile")
 	if os.IsNotExist(err) {
-		common.SaveFile("Dockerfile", files.Dockerfile)
+		saveFile("Dockerfile", files.Dockerfile)
 	}
 }

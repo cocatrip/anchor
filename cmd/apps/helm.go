@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/cocatrip/anchor/pkg/common"
 	"github.com/cocatrip/anchor/pkg/files/maven"
 )
 
@@ -53,20 +52,20 @@ func InitHelm(c Config) error {
 		}
 	}
 
-	common.SaveFile(templateDir+"/deployment.yaml", maven.Deployment)
+	saveFile(templateDir+"/deployment.yaml", maven.Deployment)
 	c.Template(templateDir+"/deployment.yaml", templateDir+"/deployment.yaml")
 
-	common.SaveFile(templateDir+"/service.yaml", maven.Service)
+	saveFile(templateDir+"/service.yaml", maven.Service)
 	c.Template(templateDir+"/service.yaml", templateDir+"/service.yaml")
 
-	common.SaveFile(templateDir+"/configmap.yaml", maven.ConfigMap)
+	saveFile(templateDir+"/configmap.yaml", maven.ConfigMap)
 	c.Template(templateDir+"/configmap.yaml", templateDir+"/configmap.yaml")
 
 	if !isNoSecret {
-		common.SaveFile(templateDir+"/secret.yaml", maven.Secret)
+		saveFile(templateDir+"/secret.yaml", maven.Secret)
 	}
 
-	common.SaveFile("helm/values.yaml", maven.Values)
+	saveFile("helm/values.yaml", maven.Values)
 
 	return nil
 }

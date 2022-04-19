@@ -1,17 +1,10 @@
 package cmd
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
-
-	"github.com/cocatrip/anchor/cmd/apps"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
 )
 
-// cleanCmd represents the clean command
+// cleanCmd represents the anchor clean command
 var cleanCmd = &cobra.Command{
 	Use:       "clean",
 	Short:     "clean up files created by anchor",
@@ -19,42 +12,14 @@ var cleanCmd = &cobra.Command{
 	ValidArgs: []string{"jenkins", "docker", "helm", "all"},
 }
 
-func cleanJenkins() error {
-	var c apps.Config
-
-	f, err := ioutil.ReadFile(viper.ConfigFileUsed())
-	if err != nil {
-		return err
-	}
-
-	if err := yaml.Unmarshal(f, &c); err != nil {
-		return err
-	}
-
-	resultFileName := fmt.Sprintf("Jenkinsfile-%s", c.Global["TESTING_TAG"])
-
-	removeList := []string{
-		"Jenkinsfile",
-		resultFileName,
-	}
-
-	for _, v := range removeList {
-		_, err := os.Stat(v)
-		if !os.IsNotExist(err) {
-			os.RemoveAll(v)
-			fmt.Printf("Removing %s\n", v)
-		}
-	}
-
-	return nil
-}
-
+// cleanCmd represents the anchor clean jenkins command
 var cleanJenkinsCmd = &cobra.Command{
 	Use:          "jenkins",
 	Short:        "clean up jenkins related file",
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// run the corresponding function for this command
 		err := cleanJenkins()
 		if err != nil {
 			return err
@@ -64,42 +29,14 @@ var cleanJenkinsCmd = &cobra.Command{
 	},
 }
 
-func cleanDocker() error {
-	var c apps.Config
-
-	f, err := ioutil.ReadFile(viper.ConfigFileUsed())
-	if err != nil {
-		return err
-	}
-
-	if err := yaml.Unmarshal(f, &c); err != nil {
-		return err
-	}
-
-	resultFileName := fmt.Sprintf("Dockerfile-%s", c.Global["TESTING_TAG"])
-
-	removeList := []string{
-		"Dockerfile",
-		resultFileName,
-	}
-
-	for _, v := range removeList {
-		_, err := os.Stat(v)
-		if !os.IsNotExist(err) {
-			os.RemoveAll(v)
-			fmt.Printf("Removing %s\n", v)
-		}
-	}
-
-	return nil
-}
-
+// cleanCmd represents the anchor clean docker command
 var cleanDockerCmd = &cobra.Command{
 	Use:          "docker",
 	Short:        "clean up docker related file",
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// run the corresponding function for this command
 		err := cleanDocker()
 		if err != nil {
 			return err
@@ -109,33 +46,14 @@ var cleanDockerCmd = &cobra.Command{
 	},
 }
 
-func cleanHelm() error {
-	var c apps.Config
-
-	f, err := ioutil.ReadFile(viper.ConfigFileUsed())
-	if err != nil {
-		return err
-	}
-
-	if err := yaml.Unmarshal(f, &c); err != nil {
-		return err
-	}
-
-	_, err = os.Stat("helm")
-	if !os.IsNotExist(err) {
-		os.RemoveAll("helm")
-		fmt.Printf("Removing helm directory\n")
-	}
-
-	return nil
-}
-
+// cleanCmd represents the anchor clean helm command
 var cleanHelmCmd = &cobra.Command{
 	Use:          "helm",
 	Short:        "clean up helm related file",
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// run the corresponding function for this command
 		err := cleanHelm()
 		if err != nil {
 			return err
@@ -151,6 +69,7 @@ var cleanAllCmd = &cobra.Command{
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// run the corresponding function for this command
 		err := cleanJenkins()
 		if err != nil {
 			return err
@@ -171,10 +90,15 @@ var cleanAllCmd = &cobra.Command{
 }
 
 func init() {
+	// add clean command to anchor command
 	rootCmd.AddCommand(cleanCmd)
 
+	// add jenkins command to clean command
 	cleanCmd.AddCommand(cleanJenkinsCmd)
+	// add docker command to clean command
 	cleanCmd.AddCommand(cleanDockerCmd)
+	// add helm command to clean command
 	cleanCmd.AddCommand(cleanHelmCmd)
+	// add all command to clean command
 	cleanCmd.AddCommand(cleanAllCmd)
 }

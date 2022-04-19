@@ -1,4 +1,4 @@
-package common
+package apps
 
 import (
 	"os"
@@ -7,13 +7,13 @@ import (
 )
 
 // Success color
-func Success(s string) {
+func success(s string) {
 	color := color.New(color.FgGreen, color.Bold)
 	color.Fprintf(os.Stdout, "%s\n", s)
 }
 
 // Save a string to a file
-func SaveFile(fileName string, content string) error {
+func saveFile(fileName string, content string) error {
 	// check file ada ga
 	if _, err := os.Stat(fileName); err != nil {
 		// kalo gada create

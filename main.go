@@ -1,7 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package main
 
 import (
@@ -9,5 +5,6 @@ import (
 )
 
 func main() {
+	// run Execute function in package cmd
 	cmd.Execute()
 }

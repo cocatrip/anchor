@@ -1,7 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
@@ -14,29 +10,33 @@ import (
 
 var cfgFile string
 
+// represents anchor command
 var rootCmd = &cobra.Command{
 	Use:   "anchor",
 	Short: "",
 	Long:  ``,
-	// Run: func(cmd *cobra.Command, args []string) { },
-	// RunE: func(cmd *cobra.Command, args []string) error { },
 }
 
+// Execute function called by main.go
 func Execute() {
-	files.LoadFiles()
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
 }
 
+// init function executed before running any cli command
 func init() {
+	// run initConfig function
 	cobra.OnInitialize(initConfig)
 
+	// declare flag for anchor cli
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config.yaml", "config file")
+	rootCmd.PersistentFlags().StringVarP(&files.Project, "type", "t", "maven", "maven, node, or flutter")
 }
 
 func initConfig() {
+	// set config or default to config.yaml
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
@@ -44,4 +44,7 @@ func initConfig() {
 		viper.SetConfigName("config.yaml")
 	}
 	viper.SetConfigType("yaml")
+
+	// load all files according to project type
+	files.LoadFiles()
 }

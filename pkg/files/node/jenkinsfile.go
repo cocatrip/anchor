@@ -27,8 +27,8 @@ spec:
   # Use service account that can deploy to all namespaces
   
   containers: 
-  - name: maven
-    image: maven:3.8.1-openjdk-11
+  - name: node
+    image: node:lts-alpine
     imagePullPolicy: IfNotPresent
     command:
     - cat
@@ -65,16 +65,11 @@ spec:
   stages {
     stage('build') {
       steps {
-        container('maven') {
+        container('node') {
           sh """
             echo "******** currently executing Build stage ********"
-            [[- if eq .Global.TEMPLATE "maven" ]]
-            mvn clean package 
-            [[- end ]]
-            [[- if eq .Global.TEMPLATE "node" ]]
             npm install
 						npm run build
-            [[- end ]]
           """
         }
       }
