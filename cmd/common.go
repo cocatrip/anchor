@@ -10,7 +10,7 @@ import (
 )
 
 // function to read config to config struct
-func readConfig(c *apps.Config) error {
+func ReadConfig(c *apps.Config) error {
 	// read config files used
 	f, err := ioutil.ReadFile(viper.ConfigFileUsed())
 	if err != nil {

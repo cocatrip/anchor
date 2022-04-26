@@ -10,6 +10,7 @@ import (
 
 var Project string
 
+// variable for holding files
 var ConfigMap string
 var Deployment string
 var Dockerfile string

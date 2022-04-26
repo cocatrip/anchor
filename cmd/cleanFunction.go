@@ -12,7 +12,7 @@ func cleanJenkins() error {
 	var config apps.Config
 
 	// read from config file and put it to config struct
-	if err := readConfig(&config); err != nil {
+	if err := ReadConfig(&config); err != nil {
 		return err
 	}
 
@@ -43,7 +43,7 @@ func cleanDocker() error {
 	var config apps.Config
 
 	// read from config file and put it to config struct
-	if err := readConfig(&config); err != nil {
+	if err := ReadConfig(&config); err != nil {
 		return err
 	}
 
@@ -74,7 +74,7 @@ func cleanHelm() error {
 	var config apps.Config
 
 	// read from config file and put it to config struct
-	if err := readConfig(&config); err != nil {
+	if err := ReadConfig(&config); err != nil {
 		return err
 	}
 

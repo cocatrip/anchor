@@ -13,7 +13,7 @@ func templateJenkins() error {
 	var config apps.Config
 
 	// read from config file and put it to config struct
-	if err := readConfig(&config); err != nil {
+	if err := ReadConfig(&config); err != nil {
 		return err
 	}
 
@@ -37,7 +37,7 @@ func templateDocker() error {
 	var config apps.Config
 
 	// read from config file and put it to config struct
-	if err := readConfig(&config); err != nil {
+	if err := ReadConfig(&config); err != nil {
 		return err
 	}
 
@@ -61,7 +61,7 @@ func templateHelm(cmd *cobra.Command) error {
 	var config apps.Config
 
 	// read from config file and put it to config struct
-	if err := readConfig(&config); err != nil {
+	if err := ReadConfig(&config); err != nil {
 		return err
 	}
 
