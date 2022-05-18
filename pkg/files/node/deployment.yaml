@@ -1,6 +1,4 @@
-package node
-
-var Deployment string = `apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "[[ .Global.APPLICATION_NAME ]].fullname" . }}
@@ -78,4 +76,4 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
-      {{- end }}`
+      {{- end }}

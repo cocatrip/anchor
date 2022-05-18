@@ -5,10 +5,8 @@ anchor
 helm
 
 # Files
-Jenkinsfile
 Jenkinsfile-*
 
-Dockerfile
 Dockerfile-*
 
 config.yaml

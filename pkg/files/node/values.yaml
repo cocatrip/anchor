@@ -1,6 +1,3 @@
-package node
-
-var Values string = `
 # Default values for [[ .Global.APPLICATION_NAME ]].
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -92,4 +89,4 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity: {}`
+affinity: {}
