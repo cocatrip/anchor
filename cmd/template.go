@@ -1,6 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+	"os/exec"
+
+	"github.com/cocatrip/anchor/cmd/apps"
 	"github.com/spf13/cobra"
 )
 
@@ -20,7 +25,7 @@ var templateJenkinsCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// run function for templating jenkins
-		err := templateJenkins()
+		err := template(cmd, "jenkins")
 		if err != nil {
 			return err
 		}
@@ -37,7 +42,7 @@ var templateDockerCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// run function for templating docker
-		err := templateDocker()
+		err := template(cmd, "docker")
 		if err != nil {
 			return err
 		}
@@ -53,8 +58,12 @@ var templateHelmCmd = &cobra.Command{
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if err := isHelmExist(); err != nil {
+			return err
+		}
+
 		// run function for templating helm
-		err := templateHelm(cmd)
+		err := template(cmd, "helm")
 		if err != nil {
 			return err
 		}
@@ -70,20 +79,26 @@ var templateAllCmd = &cobra.Command{
 	Long:         ``,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		var err error
+
 		// run function for templating jenkins
-		err := templateJenkins()
+		err = template(cmd, "jenkins")
 		if err != nil {
 			return err
 		}
 
 		// run function for templating docker
-		err = templateDocker()
+		err = template(cmd, "docker")
 		if err != nil {
 			return err
 		}
 
+		if err := isHelmExist(); err != nil {
+			return err
+		}
+
 		// run function for templating helm
-		err = templateHelm(cmd)
+		err = template(cmd, "helm")
 		if err != nil {
 			return err
 		}
@@ -110,4 +125,81 @@ func init() {
 	// add --no-secret flag for anchor template all command
 	// which also contain helm command
 	templateAllCmd.Flags().BoolP("no-secret", "", false, "don't create secret.yaml inside templates")
+}
+
+func isHelmExist() error {
+	cmd := exec.Command("helm", "version")
+  if err := cmd.Run(); err != nil {
+		return err
+  }
+  return nil
+}
+
+func buildResultFileName(tools, toolFileName, testingTag, appName string) string {
+	if tools != "helm" {
+		return fmt.Sprintf("%s-%s", toolFileName, testingTag)
+	} else {
+		return fmt.Sprintf("helm/%s/values-%s.yaml", appName, testingTag)
+	}
+}
+
+func template(cmd *cobra.Command, tools string) error {
+	var err error
+	var config apps.Config
+	var toolFileName string
+	var resultFileName string
+	
+	// read from config file and put it to config struct
+	if err := ReadConfig(&config); err != nil {
+		return err
+	}
+
+	testingTag := fmt.Sprintf("%s", config.Global["TESTING_TAG"])
+	appName := fmt.Sprintf("%s", config.Global["APPLICATION_NAME"])
+
+	if tools == "jenkins" {
+		// call initJenkins to create template file for jenkins
+		apps.InitJenkins()
+		
+		toolFileName = "Jenkinsfile"
+
+	} else if tools == "docker" {
+		// call initDocker to create template file for docker
+		apps.InitDocker()
+
+		toolFileName = "Dockerfile"
+
+	} else if tools == "helm" {
+		// read value of flag --no-secret
+		isNoSecret, err := cmd.Flags().GetBool("no-secret")
+		if err != nil {
+			return err
+		}
+
+		// put it in config struct so it can be used for templating
+		// example: [[ if .Helm.isNoSecret ]]
+		config.Helm["isNoSecret"] = isNoSecret
+
+		// define template file name
+		toolFileName = "helm/values.yaml"
+
+		// check if template file already exist
+		_, err = os.Stat(toolFileName)
+		if os.IsNotExist(err) {
+			// if it doesn't then exec InitHelm to run `helm create APPLICATION_NAME`
+			// where APPLICATION_NAME is defined in config.yaml
+			apps.InitHelm(config)
+		}
+	}
+
+	// define result file according to TESTING_TAG defined in config.yaml
+	resultFileName = buildResultFileName(tools, toolFileName, testingTag, appName)
+
+	// parse generated template and save output to resultFileName
+	err = config.Template(toolFileName, resultFileName)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
