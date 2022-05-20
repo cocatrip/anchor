@@ -1,8 +1,65 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
+	"github.com/cocatrip/anchor/cmd/apps"
 	"github.com/spf13/cobra"
 )
+
+func clean(tools string) error {
+	var config apps.Config
+	var resultFileName string
+	var removeList []string
+
+	// read from config file and put it to config struct
+	if err := ReadConfig(&config); err != nil {
+		return err
+	}
+
+	if tools != "helm" {
+		if tools == "jenkins" {
+			// define the resultFileName so it can be deleted
+			resultFileName = fmt.Sprintf("Jenkinsfile-%s", config.Global["TESTING_TAG"])
+
+			// list of to be removed files
+			removeList = []string{
+				"Jenkinsfile",
+				resultFileName,
+			}
+		} else if tools == "docker" {
+			// define the resultFileName so it can be deleted
+			resultFileName = fmt.Sprintf("Dockerfile-%s", config.Global["TESTING_TAG"])
+
+			// list of to be removed files
+			removeList = []string{
+				"Dockerfile",
+				resultFileName,
+			}
+		}
+
+		// loop through the list and delete file one by one
+		for _, v := range removeList {
+			// check if exist if not then don't delete so os.Remove will never return err
+			_, err := os.Stat(v)
+			if !os.IsNotExist(err) {
+				os.Remove(v)
+				fmt.Printf("Removing %s\n", v)
+			}
+		}
+	} else {
+		// simply check if helm directory exist or not
+		_, err := os.Stat("helm")
+		// if exist then recursively remove the directory
+		if !os.IsNotExist(err) {
+			os.RemoveAll("helm")
+			fmt.Printf("Removing helm directory\n")
+		}
+	}
+
+	return nil
+}
 
 // cleanCmd represents the anchor clean command
 var cleanCmd = &cobra.Command{
@@ -20,7 +77,7 @@ var cleanJenkinsCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// run the corresponding function for this command
-		err := cleanJenkins()
+		err := clean("jenkins")
 		if err != nil {
 			return err
 		}
@@ -37,7 +94,7 @@ var cleanDockerCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// run the corresponding function for this command
-		err := cleanDocker()
+		err := clean("docker")
 		if err != nil {
 			return err
 		}
@@ -54,7 +111,7 @@ var cleanHelmCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// run the corresponding function for this command
-		err := cleanHelm()
+		err := clean("helm")
 		if err != nil {
 			return err
 		}
@@ -70,17 +127,17 @@ var cleanAllCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// run the corresponding function for this command
-		err := cleanJenkins()
+		err := clean("jenkins")
 		if err != nil {
 			return err
 		}
 
-		err = cleanDocker()
+		err = clean("docker")
 		if err != nil {
 			return err
 		}
 
-		err = cleanHelm()
+		err = clean("helm")
 		if err != nil {
 			return err
 		}
