@@ -1,4 +1,8 @@
-# Required Variable
+# ⚓anchor
+anchor merupakan sebuah cli yang dibuat dengan tujuan untuk melakukan _Automation_
+pada proses pekerjaan DevOps tepatnya dalam proses management configuration untuk sebuah deployment
+
+## Required Variable
 Anchor will look for these variable inside config.yaml and exit if one or more variable doesn't exist
 - APPLICATION_NAME
 - BUSINESS_NAME
@@ -6,9 +10,9 @@ Anchor will look for these variable inside config.yaml and exit if one or more v
 - SERVER_NAME
 - TEMPLATE
 
-# Usage
+## Usage
 
-## Define variable inside config.yaml
+### Define variable inside config.yaml
 ```yaml
 // config.yaml
 APPLICATION_NAME: ad1-lead-main
@@ -21,7 +25,7 @@ jenkins:
   example: This is an example
 ```
 
-## Using variable
+### Using variable
 ```groovy
 // Jenkinsfile
 pipeline {
@@ -46,7 +50,7 @@ pipeline {
 }
 ```
 
-## Enabling command completion
+### Enabling command completion
 
 ```
 anchor completion [shell] --help
