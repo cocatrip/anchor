@@ -1,4 +1,4 @@
-# ⚓anchor
+# ⚓ anchor
 anchor merupakan sebuah cli yang dibuat dengan tujuan untuk melakukan _Automation_
 pada proses pekerjaan DevOps tepatnya dalam proses management configuration untuk sebuah deployment
 

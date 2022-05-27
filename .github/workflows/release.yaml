@@ -34,3 +34,18 @@ jobs:
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
         binary_name: "anchor"
+
+  releases-standalone:
+    needs: release-changelog
+    name: Release Standalone
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v3
+      with:
+        go-version: '>=1.17.0'
+    - run: go build
+    - uses: actions/upload-artifact@v3
+      with:
+        name: anchor
+        path: ./anchor
