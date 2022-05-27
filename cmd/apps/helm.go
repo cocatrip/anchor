@@ -13,7 +13,6 @@ import (
 // Pass --no-secrets to not generate secret.yaml
 func InitHelm(c Config) error {
 	appName := fmt.Sprintf("%v", c.Global["APPLICATION_NAME"])
-
 	helmDir := "helm"
 	chartDir := fmt.Sprintf("%s/%s", helmDir, appName)
 	templateDir := fmt.Sprintf("%s/templates", chartDir)
