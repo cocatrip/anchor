@@ -15,9 +15,9 @@ Bash:
 
   # To load completions for each session, execute once:
   # Linux:
-  $ %[1]s completion bash > /etc/bash_completion.d/%[1]s
+  $ %[1]s completion bash | sudo tee /etc/bash_completion.d/%[1]s > /dev/null
   # macOS:
-  $ %[1]s completion bash > /usr/local/etc/bash_completion.d/%[1]s
+  $ %[1]s completion bash | sudo tee /usr/local/etc/bash_completion.d/%[1]s > /dev/null
 
 Zsh:
 
@@ -27,7 +27,7 @@ Zsh:
   $ echo "autoload -U compinit; compinit" >> ~/.zshrc
 
   # To load completions for each session, execute once:
-  $ %[1]s completion zsh > "${fpath[1]}/_%[1]s"
+  $ %[1]s completion zsh | sudo tee "${fpath[1]}/_%[1]s" > /dev/null
 
   # You will need to start a new shell for this setup to take effect.
 
